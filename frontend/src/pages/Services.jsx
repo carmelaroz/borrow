@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
 import { useNavigate } from 'react-router-dom';
 import './Services.css';
+import logo from '../logoGiveIt.jpg'; // Adjust path based on where you place it in src
 
 // Placeholder images for services
 const cleaningImg = 'https://via.placeholder.com/100?text=Cleaning';
@@ -146,6 +147,7 @@ function Services() {
     <div className="app-container">
       {/* Header */}
       <header className="header">
+        <img src={logo} alt="GiveIt Logo" className="header-logo" />
         <h1>SERVICES</h1>
       </header>
 
@@ -163,11 +165,7 @@ function Services() {
         </div>
       </div>
 
-      <div className="toggle-type-button-container">
-        <button className="toggle-type-button" onClick={toggleViewType}>
-          {viewType === 'available' ? 'Show Needed Services' : 'Show Available Services'}
-        </button>
-      </div>
+
 
       {/* Map or List View */}
       {view === 'map' ? (
@@ -225,7 +223,11 @@ function Services() {
           ))}
         </div>
       )}
-
+      <div className="toggle-type-button-container">
+        <button className="toggle-type-button" onClick={toggleViewType}>
+          {viewType === 'available' ? 'Show Needed Services' : 'Show Available Services'}
+        </button>
+      </div>
       {/* Modal for service details */}
       {showModal && selectedService && (
         <div className="modal-overlay" onClick={closeModal}>

@@ -3,6 +3,7 @@ import React, { useState, useCallback } from 'react';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
+import logo from '../logoGiveIt.jpg'; // Adjust path based on where you place it in src
 
 // Placeholder images for the items (you can replace these with actual image URLs)
 const bicycleImg = 'https://via.placeholder.com/100?text=Bicycle';
@@ -139,12 +140,14 @@ function Home() {
     <div className="app-container">
       {/* Header */}
       <header className="header">
-        <h1>RENT ANYTHING</h1>
+      <img src={logo} alt="GiveIt Logo" className="header-logo" />
+      <h1>RENT ANYTHING</h1>
       </header>
 
       {/* Search and Filter Section */}
       <div className="search-filter">
         <div className="search-bar">
+
           <input type="text" placeholder="Search items" />
         </div>
         <div className="sort-filter-buttons">
