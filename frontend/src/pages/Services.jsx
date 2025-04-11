@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
 import { useNavigate } from 'react-router-dom';
 import './Services.css';
-import logo from '../logoGiveIt.jpg'; // Adjust path based on where you place it in src
+import logo from '../assets/logoGiveIt.jpg'; // Adjust path based on where you place it in src
 
 // Placeholder images for services
 const cleaningImg = 'https://via.placeholder.com/100?text=Cleaning';
@@ -139,17 +139,17 @@ function Services() {
 
   const currentServices = viewType === 'available' ? availableServices : neededServices;
 
-  const handleNavigation = (path) => {
-    navigate(path);
-  };
+  // const handleNavigation = (path) => {
+  //   navigate(path);
+  // };
 
   return (
     <div className="app-container">
       {/* Header */}
-      <header className="header">
+      {/* <header className="header">
         <img src={logo} alt="GiveIt Logo" className="header-logo" />
         <h1>SERVICES</h1>
-      </header>
+      </header> */}
 
       {/* Search and Filter Section */}
       <div className="search-filter">
@@ -251,7 +251,7 @@ function Services() {
       )}
 
       {/* Bottom Navigation */}
-      <nav className="bottom-nav">
+      {/* <nav className="bottom-nav">
         <div className="nav-item" onClick={() => handleNavigation('/')}>
           <span className="nav-icon">🏠</span>
           <span className="nav-text">Home</span>
@@ -272,7 +272,7 @@ function Services() {
           <span className="nav-icon">👤</span>
           <span className="nav-text">Account</span>
         </div>
-      </nav>
+      </nav> */}
     </div>
   );
 }

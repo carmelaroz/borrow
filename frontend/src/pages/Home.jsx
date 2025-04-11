@@ -3,7 +3,8 @@ import React, { useState, useCallback } from 'react';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
-import logo from '../logoGiveIt.jpg'; // Adjust path based on where you place it in src
+// import logo from '../logoGiveIt.jpg'; // Adjust path based on where you place it in src
+import Navbar from '../components/Navbar';
 
 // Placeholder images for the items (you can replace these with actual image URLs)
 const bicycleImg = 'https://via.placeholder.com/100?text=Bicycle';
@@ -132,17 +133,17 @@ function Home() {
 
   const currentItems = viewType === 'available' ? availableItems : neededItems;
 
-  const handleNavigation = (path) => {
-    navigate(path);
-  };
+  // const handleNavigation = (path) => {
+  //   navigate(path);
+  // };
 
   return (
     <div className="app-container">
       {/* Header */}
-      <header className="header">
+      {/* <header className="header">
       <img src={logo} alt="GiveIt Logo" className="header-logo" />
       <h1>RENT ANYTHING</h1>
-      </header>
+      </header> */}
 
       {/* Search and Filter Section */}
       <div className="search-filter">
@@ -244,7 +245,7 @@ function Home() {
             {viewType === 'available' ? 'Show Needed Items' : 'Show Available Items'}
           </button>
 </div>
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation
       <nav className="bottom-nav">
         <div className="nav-item active" onClick={() => handleNavigation('/')}>
           <span className="nav-icon">🏠</span>
@@ -266,7 +267,7 @@ function Home() {
           <span className="nav-icon">👤</span>
           <span className="nav-text">Account</span>
         </div>
-      </nav>
+      </nav> */}
     </div>
   );
 }

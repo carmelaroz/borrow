@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const rentalRoutes = require('./routes/rentalRoutes');
+const authRoutes = require('./routes/authRoutes');
 require('dotenv').config();
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/rentals', rentalRoutes);
+app.use('/api/auth', authRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 5000;

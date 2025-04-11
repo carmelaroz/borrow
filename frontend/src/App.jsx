@@ -1,29 +1,36 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LoadScript } from '@react-google-maps/api';
-import Navbar from './components/Navbar';
+import React from 'react';
+import Layout from './components/Layout';
 import Home from './pages/Home';
 import Search from './pages/Search';
-import Rentals from './pages/Rentals';
 import Services from './pages/Services';
 import Property from './pages/Property';
+import Account from './pages/account.jsx';
 import ErrorBoundary from './ErrorBoundary.jsx';
-import './styles.css';
-import React from 'react';
+import Dashboard from './pages/Dashboard.jsx';
+import SignUp from './components/Auth/SignUp.jsx';
+import './styles/global.css';
 
 function App() {
   return (
     <LoadScript googleMapsApiKey="AIzaSyAJFC3lneX3m6lWIhsGanx1SCSTbOi4luA">
       <Router>
-        <div className="app">
-          
+        <ErrorBoundary>
+        <div className="app-container">
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/properties" element={<Search />} />
-            <Route path="/rentals" element={<Rentals />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/property/:id" element={<Property />} />
+            <Route element={<Layout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/properties" element={<Search />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/property/:id" element={<Property />} />
+              <Route path="/account" element={<Account />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/signup" element={<SignUp />} />
+            </Route>
           </Routes>
-        </div>
+          </div>
+        </ErrorBoundary>
       </Router>
     </LoadScript>
   );
