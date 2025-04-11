@@ -20,19 +20,19 @@ function App() {
         <div className="app-container">
           <Routes>
             <Route element={<Layout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/properties" element={<Search />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/property/:id" element={<Property />} />
-              <Route path="/account" element={<Account />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/signup" element={<SignUp />} />
-            </Route>
-          </Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/properties" element={<Search />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/property/:id" element={<Property />} />
+                <Route path="/account" element={<Account />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/signup" element={<SignUp />} />
+             </Route>
+            </Routes>
           </div>
-        </ErrorBoundary>
-      </Router>
-    </LoadScript>
+         </ErrorBoundary>
+        </Router>
+      </LoadScript>
   );
 }
 

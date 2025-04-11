@@ -1,6 +1,10 @@
-import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import '../styles/components/Navbar.css';
+import { GoHome } from "react-icons/go";
+import { GoTools } from "react-icons/go";
+import { BsViewList } from "react-icons/bs";
+import { VscAccount } from "react-icons/vsc";
+import { AiOutlineMessage } from "react-icons/ai";
 
 
 function Navbar() {
@@ -13,23 +17,23 @@ function Navbar() {
   return (
     <nav className="bottom-nav">
       <div className="nav-item" onClick={() => handleNavigation('/')}>
-        <span className="nav-icon">🏠</span>
+        <GoHome className="nav-icon"/>
         <span className="nav-text">Home</span>
       </div>
       <div className="nav-item" onClick={() => handleNavigation('/services')}>
-        <span className="nav-icon">🔧</span>
+        <GoTools className="nav-icon"/>
         <span className="nav-text">Services</span>
       </div>
       <div className="nav-item" onClick={() => handleNavigation('/messages')}>
-        <span className="nav-icon">💬</span>
+      <AiOutlineMessage className="nav-icon"/>
         <span className="nav-text">Messages</span>
       </div>
       <div className="nav-item" onClick={() => handleNavigation('/my-items')}>
-        <span className="nav-icon">📋</span>
+        <BsViewList className="nav-icon"/>
         <span className="nav-text">My Items</span>
       </div>
       <div className="nav-item" onClick={() => handleNavigation('/account')}>
-        <span className="nav-icon">👤</span>
+        <VscAccount className="nav-icon"/>
         <span className="nav-text">Account</span>
       </div>
     </nav>

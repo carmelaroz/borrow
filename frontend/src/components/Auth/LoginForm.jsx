@@ -39,7 +39,6 @@ const LoginForm = () => {
     return (
         <form onSubmit={handleSubmit} className="login-form">
         <h2>Login</h2>
-
         <input
             type="email"
             placeholder="Email"
@@ -59,7 +58,6 @@ const LoginForm = () => {
         {error && <p style={{ color: 'red' }}>{error}</p>}
 
         <button type="submit">Log In</button>
-
         <p>
             Don't have an account?{' '}
             <span
@@ -71,6 +69,7 @@ const LoginForm = () => {
         </p>
         </form>
     );
+    
 };
 
 export default LoginForm;
