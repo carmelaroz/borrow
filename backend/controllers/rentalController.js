@@ -1,14 +1,31 @@
-const Rental = require('../models/Rental');
+const Rental = require('../models/Rental.js');
 
-const getAllRentals = async (req, res) => {
-    try {
-        const rentals = await Rental.find();
-        console.log('Fetched rentals:', rentals);
-        res.json(rentals);
-    } catch (err) {
-        console.error('Error fetching rentals:', err);
-        res.status(500).json({ error: 'Server error' });
-    }
+const uploadNewRental = async (req, res) => {
+const { title, description, category, pricePerDay, images, phone, status } = req.body;
+
+// Check if the user is attached to the request (e.g. from auth middleware)
+if (!req.user) {
+    return res.status(401).json({ error: 'Unauthorized. User data missing.' });
+}
+
+try {
+    const newRental = await Rental.create({
+    firstName: req.user.firstName,
+    lastName: req.user.lastName,
+    email: req.user.email,
+    title,
+    description,
+    category,
+    pricePerDay,
+    images,
+    phone,
+    status,
+    });
+
+    res.status(201).json(newRental);
+} catch (error) {
+    res.status(400).json({ error: error.message });
+}
 };
 
-module.exports = { getAllRentals };
+module.exports = { uploadNewRental };

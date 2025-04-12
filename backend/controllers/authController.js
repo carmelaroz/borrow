@@ -31,7 +31,7 @@ const signUp = async (req, res) => {
         password: hashedPassword,
     });
 
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign({ _id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
     res.status(201).json({
         token,
@@ -57,20 +57,20 @@ const logIn = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
         expiresIn: '1d',
         });
 
-        // res.status(200).json({
-        // token,
-        // user: {
-        //     id: user._id,
-        //     firstName: user.firstName,
-        //     lastName: user.lastName,
-        //     email: user.email,
-        // },
-        // });
-        res.status(200).json({ message: 'User successfully logged in' });
+        res.status(200).json({
+        token,
+        user: {
+            id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+        },
+        });
+        // res.status(200).json({ message: 'User successfully logged in' });
     } catch (error) {
         res.status(500).json({ message: 'Something went wrong', error });
     }

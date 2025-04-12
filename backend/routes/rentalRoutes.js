@@ -1,7 +1,10 @@
 const express = require('express');
-const router = express.Router();
-const { getAllRentals } = require('../controllers/rentalController');
+const { uploadNewRental } = require('../controllers/rentalController.js');
+const requireAuth = require('../middleware/authMiddleware.js');
 
-router.get('/', getAllRentals);
+const router = express.Router();
+
+// Protected route
+router.post('/', requireAuth, uploadNewRental);
 
 module.exports = router;
