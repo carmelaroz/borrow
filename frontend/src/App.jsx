@@ -11,6 +11,7 @@ import ErrorBoundary from './ErrorBoundary.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import SignUp from './components/Auth/SignUp.jsx';
 import './styles/global.css';
+import UploadForm from './components/uploadForm.jsx';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
                 <Route path="/account" element={<Account />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/signup" element={<SignUp />} />
+                <Route path="/upload" element={<UploadForm />} />
              </Route>
             </Routes>
           </div>

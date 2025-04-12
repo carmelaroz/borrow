@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../../context/AuthContext';
 
 const LoginForm = () => {
+    const { dispatch } = useAuthContext();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -27,6 +29,8 @@ const LoginForm = () => {
 
         // You can store token or set user context here if needed
         // localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data)); // this includes the JWT token
+        dispatch({ type: 'LOGIN', payload: data });
 
         // alert(data.message);
         navigate('/dashboard', { state: { user: data.user } });

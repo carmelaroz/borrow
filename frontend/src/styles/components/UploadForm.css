@@ -1,0 +1,22 @@
+.upload-form-container {
+    margin-top: 70px; /* Push it down a bit */
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: white;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.upload-form textarea {
+    height: 150px;
+    resize: vertical;
+    font-size: 1rem;
+}
+
+.upload-form .button-group {
+    display: flex;
+    gap: 20px; /* gap between buttons */
+    justify-content: flex-start;
+}
