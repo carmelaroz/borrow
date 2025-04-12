@@ -28,3 +28,11 @@
 .offer-button:hover {
     background-color: #0056b3;
 }
+
+.logout-button {
+    background-color: rgb(223, 38, 38);
+}
+
+.logout-button:hover {
+    background-color: rgb(173, 26, 26);
+}

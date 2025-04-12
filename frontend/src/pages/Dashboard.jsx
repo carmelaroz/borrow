@@ -21,8 +21,11 @@ function Dashboard() {
 
     return (
         <div className="dashboard-container">
-        <h2>Hello {user?.firstName || 'User'}!</h2>
-        <button className="offer-button" onClick={handleOffer}>Offer Item to Rent</button>
+        <button className="offer-button" onClick={handleOffer}>Offer item to rent</button>
+        <button className="offer-button">Offer service</button>
+        <button >My items</button>
+        <button >My services</button>
+        <button >Edit profile</button>
         <button className="logout-button" onClick={handleLogout}>Logout</button>
         </div>
     );
