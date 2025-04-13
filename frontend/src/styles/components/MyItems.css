@@ -1,0 +1,25 @@
+.my-items-container {
+    padding: 0rem 2rem 2rem 2rem;  /* Reduced top padding */
+    min-height: 100vh;
+    overflow-y: auto;
+    padding-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;         /* Center all content horizontally */
+    text-align: center;          /* Center text like "My Items" and fallback messages */
+}
+
+.items-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    width: 100%;
+    max-width: 800px;            /* Optional: limit max width for better layout on large screens */
+    justify-content: center;
+}
+
+.not-logged-in {
+    color: #890f0f;
+    font-weight: bold;
+    margin-top: 1rem;
+}

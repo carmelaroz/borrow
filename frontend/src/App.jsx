@@ -12,6 +12,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import SignUp from './components/Auth/SignUp.jsx';
 import './styles/global.css';
 import UploadForm from './components/uploadForm.jsx';
+import MyItems from './components/MyItems/MyItems.jsx';
 
 function App() {
   return (
@@ -29,6 +30,8 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/upload" element={<UploadForm />} />
+                <Route path="/my-items" element={<MyItems />} />
+
              </Route>
             </Routes>
           </div>
