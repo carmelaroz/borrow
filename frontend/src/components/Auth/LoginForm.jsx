@@ -72,8 +72,7 @@ const LoginForm = () => {
             </span>
         </p>
         </form>
-    );
-    
+    );  
 };
 
 export default LoginForm;

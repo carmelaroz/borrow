@@ -23,9 +23,9 @@ function Dashboard() {
         <div className="dashboard-container">
         <button className="offer-button" onClick={handleOffer}>Offer item to rent</button>
         <button className="offer-button">Offer service</button>
-        <button >My items</button>
-        <button >My services</button>
-        <button >Edit profile</button>
+        <button className="offer-button">My items</button>
+        <button className="offer-button">My services</button>
+        <button className="offer-button">Edit profile</button>
         <button className="logout-button" onClick={handleLogout}>Logout</button>
         </div>
     );

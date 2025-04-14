@@ -9,4 +9,7 @@ export default defineConfig({
     host: 'localhost',
     port: 5173,
   },
+  alias: {
+    '@tailwindcss/config': path.resolve(__dirname, 'tailwind.config.js'),
+  }
 })
