@@ -20,7 +20,7 @@ const availableItems = [
     price: 15, 
     image: bicycleImg, 
     position: { lat: 32.0428, lng: 34.760 },
-    icon: '🚲',
+
     description: 'Mountain bike in good condition. Perfect for city rides and trails.'
   },
   { 

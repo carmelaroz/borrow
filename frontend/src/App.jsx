@@ -13,6 +13,7 @@ import SignUp from './components/Auth/SignUp.jsx';
 import './styles/global.css';
 import UploadForm from './components/uploadForm.jsx';
 import MyItems from './components/MyItems/MyItems.jsx';
+import MessagesPage from './pages/Messages';
 
 function App() {
   return (
@@ -31,7 +32,7 @@ function App() {
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/upload" element={<UploadForm />} />
                 <Route path="/my-items" element={<MyItems />} />
-
+                <Route path="/messages" element={<MessagesPage />} />
              </Route>
             </Routes>
           </div>

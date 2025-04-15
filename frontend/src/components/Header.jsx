@@ -11,14 +11,14 @@ const Header = () => {
                 <img src={logo} alt="GiveIt Logo" className="w-32 h-auto mb-1" />
                 {user && (
                     <div className="text-2xl text-gray-700 font-semibold mt-2 ml-2">
-                        Hello {user.firstName || 'User'}! 👋
+                        Hello {user.user?.firstName || user.firstName || 'User'}! 👋
                     </div>
                 )}
             </div>
 
             {/* Centered Title */}
             <h1 className="text-3xl font-bold text-center mt-4 sm:mt-0">
-                RENT<br />ANYTHING
+                nice to see you again:)
             </h1>
         </header>
     );
