@@ -1,41 +1,36 @@
-import { useNavigate } from 'react-router-dom';
-import '../styles/components/Navbar.css';
-import { GoHome } from "react-icons/go";
-import { GoTools } from "react-icons/go";
+import { useLocation, useNavigate } from 'react-router-dom';
+import { GoHome, GoTools } from "react-icons/go";
 import { BsViewList } from "react-icons/bs";
 import { VscAccount } from "react-icons/vsc";
 import { AiOutlineMessage } from "react-icons/ai";
-
+import '../styles/components/Navbar.css';
+import { useAuthContext } from '../context/AuthContext';
 
 function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useAuthContext();
 
-  const handleNavigation = (path) => {
-    navigate(path);
-  };
+  const tabs = [
+    { icon: <GoHome />, path: '/', label: 'Home' },
+    { icon: <GoTools />, path: '/services', label: 'Services' },
+    { icon: <AiOutlineMessage />, path: '/messages', label: 'Messages' },
+    { icon: <BsViewList />, path: '/my-items', label: 'My Items' },
+    { icon: <VscAccount />, path: user ? '/dashboard' : '/account', label: 'Account' },
+  ];
 
   return (
     <nav className="bottom-nav">
-      <div className="nav-item" onClick={() => handleNavigation('/')}>
-        <GoHome className="nav-icon"/>
-        <span className="nav-text">Home</span>
-      </div>
-      <div className="nav-item" onClick={() => handleNavigation('/services')}>
-        <GoTools className="nav-icon"/>
-        <span className="nav-text">Services</span>
-      </div>
-      <div className="nav-item" onClick={() => handleNavigation('/messages')}>
-      <AiOutlineMessage className="nav-icon"/>
-        <span className="nav-text">Messages</span>
-      </div>
-      <div className="nav-item" onClick={() => handleNavigation('/my-items')}>
-        <BsViewList className="nav-icon"/>
-        <span className="nav-text">My Items</span>
-      </div>
-      <div className="nav-item" onClick={() => handleNavigation('/account')}>
-        <VscAccount className="nav-icon"/>
-        <span className="nav-text">Account</span>
-      </div>
+      {tabs.map((tab) => (
+        <button
+          key={tab.path}
+          className={`nav-tab ${location.pathname === tab.path ? 'active' : ''}`}
+          onClick={() => navigate(tab.path)}
+          aria-label={tab.label}
+        >
+          {tab.icon}
+        </button>
+      ))}
     </nav>
   );
 }

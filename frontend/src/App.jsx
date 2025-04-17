@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { LoadScript } from '@react-google-maps/api';
 import React from 'react';
 import Layout from './components/Layout';
@@ -15,8 +15,10 @@ import UploadForm from './components/uploadForm.jsx';
 import MyItems from './components/MyItems/MyItems.jsx';
 import MessagesPage from './pages/Messages';
 import ServiceForm from './components/ServiceForm';
+import { useAuthContext } from './context/AuthContext';
 
 function App() {
+  const { user } = useAuthContext();
   return (
     <LoadScript googleMapsApiKey="AIzaSyAJFC3lneX3m6lWIhsGanx1SCSTbOi4luA">
       <Router>
@@ -28,7 +30,7 @@ function App() {
                 <Route path="/properties" element={<Search />} />
                 <Route path="/services" element={<Services />} />
                 <Route path="/property/:id" element={<Property />} />
-                <Route path="/account" element={<Account />} />
+                <Route path="/account" element={user ? <Navigate to="/dashboard" /> : <Account />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/upload" element={<UploadForm />} />

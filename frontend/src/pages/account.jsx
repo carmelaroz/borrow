@@ -7,13 +7,6 @@ import { useNavigate } from 'react-router-dom';
 
 const Account = () => {
     const { user } = useAuthContext();
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if (user) {
-        navigate('/dashboard'); // user is logged in, go to dashboard
-        }
-    }, [user, navigate]);
     
     return (
         <div className="account-container">
