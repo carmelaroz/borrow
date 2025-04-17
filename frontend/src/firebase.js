@@ -14,9 +14,11 @@ const validateApiKey = (apiKey) => {
   return apiKey;
 };
 
-// Get environment variables with fallback
+// Get environment variables with fallback and logging
 const getEnvVar = (key, defaultValue) => {
-  return import.meta.env[key] || defaultValue;
+  const value = import.meta.env[key] || defaultValue;
+  console.log(`Env var ${key}:`, value);
+  return value;
 };
 
 // Your Firebase configuration

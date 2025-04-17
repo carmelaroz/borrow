@@ -14,6 +14,7 @@ import './styles/global.css';
 import UploadForm from './components/uploadForm.jsx';
 import MyItems from './components/MyItems/MyItems.jsx';
 import MessagesPage from './pages/Messages';
+import ServiceForm from './components/ServiceForm';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
                 <Route path="/upload" element={<UploadForm />} />
                 <Route path="/my-items" element={<MyItems />} />
                 <Route path="/messages" element={<MessagesPage />} />
+                <Route path="/offer-service" element={<ServiceForm />} />
              </Route>
             </Routes>
           </div>

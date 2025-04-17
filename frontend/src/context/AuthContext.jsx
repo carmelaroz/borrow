@@ -7,16 +7,16 @@ const AuthContext = createContext();
 const authReducer = (state, action) => {
     switch (action.type) {
         case 'LOGIN':
-            localStorage.setItem('user', JSON.stringify(action.payload)); // <-- Save user
+            localStorage.setItem('user', JSON.stringify(action.payload));
             return { 
                 user: action.payload,
-                auth: auth // Include the Firebase auth object
+                auth: auth
             };
         case 'LOGOUT':
-            localStorage.removeItem('user'); // <-- Remove user
+            localStorage.removeItem('user');
             return { 
                 user: null,
-                auth: auth // Keep the Firebase auth object
+                auth: auth
             };
         default:
             return state;
@@ -26,27 +26,57 @@ const authReducer = (state, action) => {
 export const AuthProvider = ({ children }) => {
     const [state, dispatch] = useReducer(authReducer, { 
         user: null,
-        auth: auth // Initialize with Firebase auth object
+        auth: auth
     });
     const [loading, setLoading] = useState(true);
 
     // Listen for Firebase auth state changes
     useEffect(() => {
         console.log('Setting up Firebase auth state listener');
-        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
             console.log('Firebase auth state changed:', firebaseUser);
             if (firebaseUser) {
-                // User is signed in
-                const userData = {
-                    uid: firebaseUser.uid,
-                    email: firebaseUser.email,
-                    displayName: firebaseUser.displayName,
-                    photoURL: firebaseUser.photoURL
-                };
-                dispatch({ 
-                    type: 'LOGIN', 
-                    payload: userData
-                });
+                try {
+                    // Get the MongoDB user data
+                    const response = await fetch('http://localhost:5000/api/users/me', {
+                        headers: {
+                            Authorization: `Bearer ${firebaseUser.uid}`,
+                        },
+                    });
+                    
+                    if (response.ok) {
+                        const mongoUser = await response.json();
+                        // User is signed in with both Firebase and MongoDB
+                        const userData = {
+                            uid: firebaseUser.uid,
+                            email: firebaseUser.email,
+                            displayName: firebaseUser.displayName,
+                            photoURL: firebaseUser.photoURL,
+                            token: firebaseUser.uid, // Use Firebase UID as token
+                            user: mongoUser // Include MongoDB user data
+                        };
+                        dispatch({ 
+                            type: 'LOGIN', 
+                            payload: userData
+                        });
+                    } else {
+                        throw new Error('Failed to fetch MongoDB user data');
+                    }
+                } catch (error) {
+                    console.error('Error fetching MongoDB user:', error);
+                    // Still allow Firebase auth but without MongoDB data
+                    const userData = {
+                        uid: firebaseUser.uid,
+                        email: firebaseUser.email,
+                        displayName: firebaseUser.displayName,
+                        photoURL: firebaseUser.photoURL,
+                        token: firebaseUser.uid
+                    };
+                    dispatch({ 
+                        type: 'LOGIN', 
+                        payload: userData
+                    });
+                }
             } else {
                 // User is signed out
                 dispatch({ type: 'LOGOUT' });

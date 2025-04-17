@@ -1,4 +1,3 @@
-// src/components/Chat.jsx
 import { useState, useEffect, useRef } from 'react';
 import { db } from '../firebase';
 import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
@@ -10,40 +9,47 @@ const Chat = ({ userId, contactId, userMap }) => {
   const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef(null);
 
-  // Generate conversation ID (sorted to be consistent)
+  // Validate inputs
+  useEffect(() => {
+    if (!userId || !contactId) {
+      setError('Invalid user or contact ID.');
+      setLoading(false);
+    }
+  }, [userId, contactId]);
+
+  // Generate conversation ID
   const conversationId = [userId, contactId].sort().join('_');
 
-  // Scroll to bottom when messages change
+  // Scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   // Initialize conversation and fetch messages
   useEffect(() => {
+    if (!userId || !contactId) return;
+
     const initializeConversation = async () => {
       try {
-        // Check if conversation exists
         const conversationRef = doc(db, 'conversations', conversationId);
         const conversationDoc = await getDoc(conversationRef);
 
         if (!conversationDoc.exists()) {
-          // Create new conversation
           await setDoc(conversationRef, {
             participants: [userId, contactId],
             lastMessage: null,
-            createdAt: serverTimestamp()
+            createdAt: serverTimestamp(),
           });
         }
 
-        // Set up messages listener
         const messagesRef = collection(db, 'conversations', conversationId, 'messages');
         const q = query(messagesRef, orderBy('timestamp', 'asc'));
-        
+
         const unsubscribe = onSnapshot(q, (snapshot) => {
-          const messagesData = snapshot.docs.map(doc => ({
+          const messagesData = snapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
-            timestamp: doc.data().timestamp?.toDate()
+            timestamp: doc.data().timestamp?.toDate(),
           }));
           setMessages(messagesData);
           setLoading(false);
@@ -65,23 +71,21 @@ const Chat = ({ userId, contactId, userMap }) => {
   // Send a message
   const sendMessage = async () => {
     if (!newMessage.trim()) return;
-    
+
     try {
-      // Add message to subcollection
       const messagesRef = collection(db, 'conversations', conversationId, 'messages');
       await addDoc(messagesRef, {
         text: newMessage,
         senderId: userId,
-        timestamp: serverTimestamp()
+        timestamp: serverTimestamp(),
       });
 
-      // Update conversation's last message
       const conversationRef = doc(db, 'conversations', conversationId);
       await updateDoc(conversationRef, {
         lastMessage: {
           text: newMessage,
-          timestamp: serverTimestamp()
-        }
+          timestamp: serverTimestamp(),
+        },
       });
 
       setNewMessage('');
@@ -98,7 +102,21 @@ const Chat = ({ userId, contactId, userMap }) => {
   };
 
   if (error) {
-    return <div className="p-4 text-red-500">{error}</div>;
+    return (
+      <div className="p-4 text-red-500">
+        {error}
+        <button
+          onClick={() => {
+            setError(null);
+            setLoading(true);
+            initializeConversation();
+          }}
+          className="ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
+        >
+          Retry
+        </button>
+      </div>
+    );
   }
 
   if (loading) {
@@ -109,9 +127,9 @@ const Chat = ({ userId, contactId, userMap }) => {
     );
   }
 
-  const contactName = userMap[contactId] 
+  const contactName = userMap[contactId]
     ? `${userMap[contactId].firstName} ${userMap[contactId].lastName}`
-    : 'Loading...';
+    : 'Unknown User';
 
   return (
     <div className="flex flex-col h-full">
@@ -139,7 +157,7 @@ const Chat = ({ userId, contactId, userMap }) => {
               >
                 <p className="text-sm">{msg.text}</p>
                 <span className="text-xs opacity-70 mt-1 block">
-                  {msg.timestamp?.toLocaleTimeString()}
+                  {msg.timestamp ? msg.timestamp.toLocaleTimeString() : 'Pending'}
                 </span>
               </div>
             </div>

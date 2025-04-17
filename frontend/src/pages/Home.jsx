@@ -1,5 +1,5 @@
 // src/Home.js
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
@@ -7,9 +7,9 @@ import './Home.css';
 import Navbar from '../components/Navbar';
 
 // Placeholder images for the items (you can replace these with actual image URLs)
-const bicycleImg = 'https://via.placeholder.com/100?text=Bicycle';
-const drillImg = 'https://via.placeholder.com/100?text=Drill';
-const cameraImg = 'https://via.placeholder.com/100?text=Camera';
+const bicycleImg = '/images/bicycle.jpg';
+const drillImg = '/images/Drill.jpg';
+const cameraImg = '/images/camera.jpg';
 const guitarImg = '/images/guitar.jpg'; 
 
 // Sample items data with actual coordinates and icons
@@ -98,6 +98,14 @@ function Home() {
   const [viewType, setViewType] = useState('available'); // 'available' or 'needed'
   const [selectedItem, setSelectedItem] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showSortModal, setShowSortModal] = useState(false);
+  const [sortOption, setSortOption] = useState('');
+  const [filters, setFilters] = useState({
+    minPrice: '',
+    maxPrice: '',
+    category: ''
+  });
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY
@@ -133,6 +141,57 @@ function Home() {
 
   const currentItems = viewType === 'available' ? availableItems : neededItems;
 
+  const handleFilterClick = () => {
+    setShowFilterModal(true);
+  };
+
+  const handleFilterApply = () => {
+    setShowFilterModal(false);
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const filteredItems = currentItems.filter(item => {
+    if (filters.minPrice && item.price < Number(filters.minPrice)) return false;
+    if (filters.maxPrice && item.price > Number(filters.maxPrice)) return false;
+    if (filters.category && !item.name.toLowerCase().includes(filters.category.toLowerCase())) return false;
+    return true;
+  });
+
+  const handleSortClick = () => {
+    setShowSortModal(true);
+  };
+
+  const handleSortApply = (option) => {
+    setSortOption(option);
+    setShowSortModal(false);
+  };
+
+  const sortedItems = useMemo(() => {
+    if (!sortOption) return filteredItems;
+    
+    return [...filteredItems].sort((a, b) => {
+      switch (sortOption) {
+        case 'price-low-high':
+          return a.price - b.price;
+        case 'price-high-low':
+          return b.price - a.price;
+        case 'name-a-z':
+          return a.name.localeCompare(b.name);
+        case 'name-z-a':
+          return b.name.localeCompare(a.name);
+        default:
+          return 0;
+      }
+    });
+  }, [filteredItems, sortOption]);
+
   // const handleNavigation = (path) => {
   //   navigate(path);
   // };
@@ -148,16 +207,27 @@ function Home() {
       {/* Search and Filter Section */}
       <div className="search-filter">
         <div className="search-bar">
-
-          <input type="text" placeholder="Search items" />
+          <input type="text" placeholder="Search items like: bicycle, camera, tools..." />
         </div>
         <div className="sort-filter-buttons">
-          <button className="sort-button">⟐ Sort</button>
-          <button className="filter-button">⧩ Filter</button>
-          <button className="toggle-view-button" onClick={toggleView}>
-            {view === 'map' ? 'List View' : 'Map View'}
-          </button>
-
+          {view === 'list' && (
+            <button className="sort-button" onClick={handleSortClick}>
+              ⟐ Sort {sortOption && `(${sortOption.split('-').join(' ')})`}
+            </button>
+          )}
+          <button className="filter-button" onClick={handleFilterClick}>⧩ Filter</button>
+          <div className="view-switch-container">
+            <span className={`view-label ${view === 'list' ? 'active' : ''}`}>List</span>
+            <label className="switch">
+              <input 
+                type="checkbox" 
+                checked={view === 'map'} 
+                onChange={() => setView(view === 'map' ? 'list' : 'map')}
+              />
+              <span className="slider round"></span>
+            </label>
+            <span className={`view-label ${view === 'map' ? 'active' : ''}`}>Map</span>
+          </div>
         </div>
       </div>
 
@@ -172,7 +242,7 @@ function Home() {
               onLoad={onLoad}
               onUnmount={onUnmount}
             >
-              {currentItems.map((item) => (
+              {sortedItems.map((item) => (
                 <Marker
                   key={item.id}
                   position={item.position}
@@ -200,7 +270,7 @@ function Home() {
         </div>
       ) : (
         <div className="list-container">
-          {currentItems.map((item) => (
+          {sortedItems.map((item) => (
             <div 
               key={item.id} 
               className="list-item"
@@ -221,7 +291,6 @@ function Home() {
       {showModal && selectedItem && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <button className="close-button" onClick={closeModal}>×</button>
             <div className="modal-header">
               <span className="item-icon">{selectedItem.icon}</span>
               <h2>{selectedItem.name}</h2>
@@ -234,17 +303,98 @@ function Home() {
                 {viewType === 'available' ? 'Rent Now' : 'Offer to Rent'}
               </button>
             </div>
+            <button className="close-button bottom-close" onClick={closeModal}>×</button>
           </div>
         </div>
       )}
-<div className="toggle-type-button-container">
 
+      {/* Filter Modal */}
+      {showFilterModal && (
+        <div className="modal-overlay" onClick={() => setShowFilterModal(false)}>
+          <div className="modal-content filter-modal" onClick={e => e.stopPropagation()}>
+            <h2>Filter Items</h2>
+            <div className="filter-form">
+              <div className="filter-group">
+                <label>Min Price ($)</label>
+                <input
+                  type="number"
+                  name="minPrice"
+                  value={filters.minPrice}
+                  onChange={handleFilterChange}
+                  placeholder="Min price"
+                />
+              </div>
+              <div className="filter-group">
+                <label>Max Price ($)</label>
+                <input
+                  type="number"
+                  name="maxPrice"
+                  value={filters.maxPrice}
+                  onChange={handleFilterChange}
+                  placeholder="Max price"
+                />
+              </div>
+              <div className="filter-group">
+                <label>Category</label>
+                <input
+                  type="text"
+                  name="category"
+                  value={filters.category}
+                  onChange={handleFilterChange}
+                  placeholder="Search by category"
+                />
+              </div>
+              <button className="apply-filter-button" onClick={handleFilterApply}>
+                Apply Filters
+              </button>
+            </div>
+            <button className="close-button bottom-close" onClick={() => setShowFilterModal(false)}>×</button>
+          </div>
+        </div>
+      )}
 
+      {/* Sort Modal */}
+      {showSortModal && (
+        <div className="modal-overlay" onClick={() => setShowSortModal(false)}>
+          <div className="modal-content sort-modal" onClick={e => e.stopPropagation()}>
+            <h2>Sort Items</h2>
+            <div className="sort-options">
+              <button 
+                className={`sort-option ${sortOption === 'price-low-high' ? 'active' : ''}`}
+                onClick={() => handleSortApply('price-low-high')}
+              >
+                Price: Low to High
+              </button>
+              <button 
+                className={`sort-option ${sortOption === 'price-high-low' ? 'active' : ''}`}
+                onClick={() => handleSortApply('price-high-low')}
+              >
+                Price: High to Low
+              </button>
+              <button 
+                className={`sort-option ${sortOption === 'name-a-z' ? 'active' : ''}`}
+                onClick={() => handleSortApply('name-a-z')}
+              >
+                Name: A to Z
+              </button>
+              <button 
+                className={`sort-option ${sortOption === 'name-z-a' ? 'active' : ''}`}
+                onClick={() => handleSortApply('name-z-a')}
+              >
+                Name: Z to A
+              </button>
+            </div>
+            <button className="close-button bottom-close" onClick={() => setShowSortModal(false)}>×</button>
+          </div>
+        </div>
+      )}
 
-<button className="toggle-type-button" onClick={toggleViewType}>
-            {viewType === 'available' ? 'Show Needed Items' : 'Show Available Items'}
-          </button>
-</div>
+      <div className="toggle-type-button-container">
+        <button className="toggle-type-button" onClick={toggleViewType}>
+          {viewType === 'available' ? 'Show Needed Items' : 'Show Available Items'}
+        </button>
+      </div>
+
       {/* Bottom Navigation
       <nav className="bottom-nav">
         <div className="nav-item active" onClick={() => handleNavigation('/')}>
