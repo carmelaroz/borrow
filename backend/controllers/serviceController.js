@@ -3,7 +3,7 @@ const Service = require('../models/Service.js');
 console.log('Loading serviceController.js');
 
 const uploadNewService = async (req, res) => {
-    const { title, description, category, pricePerHour, phone } = req.body;
+    const { title, description, category, pricePerHour, phone, city, street } = req.body;
 
     if (!req.user) {
         return res.status(401).json({ error: 'Unauthorized. User data missing.' });
@@ -19,6 +19,8 @@ const uploadNewService = async (req, res) => {
             category,
             pricePerHour,
             phone,
+            city,
+            street
         });
 
         res.status(201).json(newService);

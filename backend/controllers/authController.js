@@ -68,6 +68,9 @@ const logIn = async (req, res) => {
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
+            city: user.city,
+            street: user.street,
+            phone: user.phone
         },
         });
         // res.status(200).json({ message: 'User successfully logged in' });

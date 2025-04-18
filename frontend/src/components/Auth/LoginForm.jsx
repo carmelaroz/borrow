@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/AuthContext';
 
@@ -7,7 +7,17 @@ const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [userData, setUserData] = useState({});
+
     const navigate = useNavigate();
+
+    // Check if user data exists in localStorage
+    useEffect(() => {
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (storedUser) {
+            setUserData(storedUser.user); // Set the user data from localStorage if available
+        }
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

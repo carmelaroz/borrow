@@ -81,6 +81,8 @@ return (
             <p><strong>Category:</strong> {item.category}</p>
             <p><strong>Phone:</strong> {item.phone}</p>
             <p><strong>Price:</strong> {item.pricePerDay}₪</p>
+            <p><strong>City:</strong> {item.city}</p>
+            <p><strong>Street:</strong> {item.street}</p>
             <button onClick={() => setShowDetails(false)}>Close</button>
         </div>
         </div>

@@ -11,6 +11,8 @@ const serviceSchema = new mongoose.Schema({
     category: { type: String, required: true },
     pricePerHour: { type: Number, required: true },
     phone: { type: String, required: true },
+    city: { type: String },
+    street: { type: String },
     createdAt: { type: Date, default: Date.now },
 });
 

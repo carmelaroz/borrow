@@ -10,7 +10,9 @@ const rentalSchema = new mongoose.Schema({
     pricePerDay: { type: Number, required: true },
     images: [{ type: String }], // URLs or paths
     phone: { type: String, required: true },
-    status: { type: String, default: 'available' }
+    status: { type: String, default: 'available' },
+    city: { type: String },
+    street: { type: String },
 }, { timestamps: true });
 
 const Rental = mongoose.model('Rental', rentalSchema);

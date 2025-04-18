@@ -16,11 +16,12 @@ import MyItems from './components/MyItems/MyItems.jsx';
 import MessagesPage from './pages/Messages';
 import ServiceForm from './components/ServiceForm';
 import { useAuthContext } from './context/AuthContext';
+import GoogleMapsLoader from './components/GoogleMapsLoader.jsx';
 
 function App() {
   const { user } = useAuthContext();
   return (
-    <LoadScript googleMapsApiKey="AIzaSyAJFC3lneX3m6lWIhsGanx1SCSTbOi4luA">
+    <GoogleMapsLoader>
       <Router>
         <ErrorBoundary>
         <div className="app-container">
@@ -35,14 +36,14 @@ function App() {
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/upload" element={<UploadForm />} />
                 <Route path="/my-items" element={<MyItems />} />
-                <Route path="/messages" element={<MessagesPage />} />
+                {/* <Route path="/messages" element={<MessagesPage />} /> */}
                 <Route path="/offer-service" element={<ServiceForm />} />
              </Route>
             </Routes>
           </div>
          </ErrorBoundary>
         </Router>
-      </LoadScript>
+        </GoogleMapsLoader>
   );
 }
 

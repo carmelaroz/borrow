@@ -1,7 +1,7 @@
 const Rental = require('../models/Rental.js');
 
 const uploadNewRental = async (req, res) => {
-const { title, description, category, pricePerDay, images, phone, status } = req.body;
+const { title, description, category, pricePerDay, images, phone, status, city, street } = req.body;
 
 // Check if the user is attached to the request (e.g. from auth middleware)
 if (!req.user) {
@@ -20,6 +20,8 @@ try {
     images,
     phone,
     status,
+    city,
+    street
     });
 
     res.status(201).json(newRental);

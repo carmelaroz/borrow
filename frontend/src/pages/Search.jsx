@@ -176,8 +176,8 @@ function Search() {
       {error && <div className="error">{error}</div>}
 
       <div className="map-container">
-        <LoadScript googleMapsApiKey="AIzaSyAJFC3lneX3m6lWIhsGanx1SCSTbOi4luA">
-          <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={10}>
+        {/* <LoadScript googleMapsApiKey="AIzaSyAJFC3lneX3m6lWIhsGanx1SCSTbOi4luA"> */}
+          {/* <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={10}> */}
             {userLocation && (
               <Marker
                 position={userLocation}
@@ -192,8 +192,8 @@ function Search() {
                 label={property.title}
               />
             ))}
-          </GoogleMap>
-        </LoadScript>
+          {/* </GoogleMap> */}
+        {/* </LoadScript> */}
       </div>
 
       <div className="property-list">
