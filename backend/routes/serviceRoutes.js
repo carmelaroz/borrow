@@ -1,23 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { requireAuth } = require('../middleware/auth');
-const {
-    createService,
-    getUserServices,
-    updateService,
-    deleteService
-} = require('../controllers/serviceController');
+const { uploadNewService, getServices, getUserServices, editService, deleteService } = require('../controllers/serviceController');
+const requireAuth = require('../middleware/authMiddleware'); // Changed from 'auth' to 'authMiddleware'
 
-// Create a new service
-router.post('/', requireAuth, createService);
+console.log('Loading serviceRoutes.js');
 
-// Get all services for a specific user
-router.get('/user', requireAuth, getUserServices);
+router.post('/', requireAuth, uploadNewService); // POST /api/services
+router.get('/', getServices); // GET /api/services
+router.get('/user', requireAuth, getUserServices); // GET /api/services/user
+router.put('/:id', requireAuth, editService); // PUT /api/services/:id
+router.delete('/:id', requireAuth, deleteService); // DELETE /api/services/:id
 
-// Update a service
-router.put('/:id', requireAuth, updateService);
-
-// Delete a service
-router.delete('/:id', requireAuth, deleteService);
-
-module.exports = router; 
+module.exports = router;
