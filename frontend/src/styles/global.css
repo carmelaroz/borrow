@@ -93,7 +93,7 @@ label {
 }
 
 /* Button styles */
-button {
+/* button {
   padding: 12px 20px;
   background-color: #297cd3;
   color: #fff;
@@ -103,8 +103,8 @@ button {
   cursor: pointer;
   transition: background-color 0.3s ease;
   width: 100%;
-  margin-top: 10px; /* Space between button and other form elements */
-}
+  margin-top: 10px;
+} */
 
 /* Button hover effect */
 /* button:hover {
