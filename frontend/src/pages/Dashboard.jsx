@@ -66,12 +66,12 @@ function Dashboard() {
             <p>Email: {user.user.email}</p>
             <p>City: {user.user.city}</p>
             <p>Street: {user.user.street}</p>
-            <button className="offer-button" onClick={handleRentalOffer}>Offer item to rent</button>
-            <button className="offer-button" onClick={handleServiceOffer}>Offer service</button>
-            <button className="offer-button">My items</button>
-            <button className="offer-button">My services</button>
-            <button className="offer-button">Edit profile</button>
-            <button className="logout-button" onClick={handleLogout}>Logout</button>
+            <button className="toggle-view-btn" onClick={handleRentalOffer}>Offer item to rent</button>
+            <button className="toggle-view-btn" onClick={handleServiceOffer}>Offer service</button>
+            <button className="toggle-view-btn">My items</button>
+            <button className="toggle-view-btn">My services</button>
+            <button className="toggle-view-btn">Edit profile</button>
+            <button className="toggle-view-btn logout" onClick={handleLogout}>Logout</button>
         </div>
     );
 }

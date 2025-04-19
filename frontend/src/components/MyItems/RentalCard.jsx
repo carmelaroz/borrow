@@ -64,9 +64,9 @@ return (
         <p>{item.pricePerDay}₪ / day</p>
         <p>Status: {active ? 'Available' : 'Not Available'}</p>
         <div className="card-actions">
-        <button onClick={(e) => { e.stopPropagation(); setShowEditModal(true); }}>Edit</button>
-        <button onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(true); }}>Delete</button>
-        <button onClick={(e) => { e.stopPropagation(); handleToggleStatus(); }}>
+        <button className="toggle-view-btn" onClick={(e) => { e.stopPropagation(); setShowEditModal(true); }}>Edit</button>
+        <button className="toggle-view-btn" onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(true); }}>Delete</button>
+        <button className="toggle-view-btn" onClick={(e) => { e.stopPropagation(); handleToggleStatus(); }}>
             {active ? 'Mark as Not Available' : 'Mark as Available'}
         </button>
         </div>

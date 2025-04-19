@@ -90,7 +90,7 @@ return (
     </div>
     </div>
 
-    <div className="map-wrapper w-full max-w-md">
+    <div className="map-wrapper w-full">
         {view === "map" ? (
         <MapView locations={locations} />
         ) : (

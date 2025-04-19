@@ -1,30 +1,91 @@
-import React from "react";
+// import React from "react";
+// import '../../styles/HomePage/ListView.css'
+
+
+// const ListView = ({ rentals }) => {
+//     return (
+//     <div className="list-container-wrapper">
+//         <div className="list-container">
+//             {rentals.map((rental) => (
+//             <div key={rental._id} className="rental-card">
+//                 {rental.photo && (
+//                 <img
+//                     src={rental.photo}
+//                     alt={rental.title}
+//                     className="rental-image"
+//                 />
+//                 )}
+//                 <h3 className="rental-title"> {rental.title}</h3>
+//                 <p className="rental-description">📝 {rental.description}</p>
+//                 <p className="rental-info">
+//                 🏷️ <strong>Category:</strong> {rental.category}
+//                 </p>
+//                 <p className="rental-info">
+//                 💸 <strong>Price/Hour:</strong> {rental.pricePerHour}₪
+//                 </p>
+//                 <p className="rental-info">
+//                 📞 <strong>Contact:</strong> {rental.firstName} {rental.lastName} ({rental.phone})
+//                 </p>
+//             </div>
+//             ))}
+//         </div>
+//     </div>
+//     );
+// };
+
+// export default ListView;
+
+
+import React, { useState } from "react";
+import ImagePopup from "./ListImagePopup.jsx"; // Import the new ImagePopup component
+import '../../styles/HomePage/ListView.css';
 
 const ListView = ({ rentals }) => {
+const [selectedRental, setSelectedRental] = useState(null);
+
+const handleClick = (rental) => {
+    setSelectedRental(rental);
+};
+
+const handleClosePopup = () => {
+    setSelectedRental(null);
+};
+
 return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    {rentals.map((rental) => (
-        <div key={rental._id} className="border rounded-lg p-4 shadow">
-        {rental.photo && (
+    <div className="list-container-wrapper">
+    <div className="list-container">
+        {rentals.map((rental) => (
+        <div
+            key={rental._id}
+            className="rental-card"
+            onClick={() => handleClick(rental)} // Show pop-up when clicked
+        >
+            {rental.photo && (
             <img
-            src={rental.photo}
-            alt={rental.title}
-            className="w-full h-48 object-cover rounded mb-2"
+                src={rental.photo}
+                alt={rental.title}
+                className="rental-image"
             />
-        )}
-        <h3 className="text-lg font-semibold">{rental.title}</h3>
-        <p className="text-sm text-gray-600 mb-1">{rental.description}</p>
-        <p className="text-sm">
-            <strong>Category:</strong> {rental.category}
-        </p>
-        <p className="text-sm">
-            <strong>Price/Hour:</strong> ${rental.pricePerHour}
-        </p>
-        <p className="text-sm">
-            <strong>Contact:</strong> {rental.firstName} {rental.lastName} ({rental.phone})
-        </p>
+            )}
+            <h3 className="rental-title"> {rental.title}</h3>
+            <p className="rental-description">📝 {rental.description}</p>
+            <p className="rental-info">
+            🏷️ <strong>Category:</strong> {rental.category}
+            </p>
+            <p className="rental-info">
+            💸 <strong>Price/Hour:</strong> {rental.pricePerHour}₪
+            </p>
+            <p className="rental-info">
+            📞 <strong>Contact:</strong> {rental.firstName} {rental.lastName} ({rental.phone})
+            </p>
         </div>
-    ))}
+        ))}
+    </div>
+
+    {/* Display the pop-up if a rental is selected */}
+    {selectedRental && (
+        <ImagePopup rental={selectedRental} onClose={handleClosePopup} />
+    )}
     </div>
 );
 };

@@ -68,10 +68,6 @@ const handleEditSuccess = (updatedItem, type) => {
     }
 };
 
-const handleAddService = () => {
-    navigate('/offer-service');
-};
-
 // Show message if not logged in
 if (!user) {
     return (
@@ -117,24 +113,18 @@ return (
             <>
                 {services.length > 0 ? (
                     services.map(service => (
-                        <div key={service._id} className="service-card">
-                            <h3>{service.title}</h3>
-                            <p>{service.description}</p>
-                            <p>Category: {service.category}</p>
-                            <p>Price: {service.pricePerHour}₪/hour</p>
-                            <p>Status: {service.status}</p>
-                            <div className="card-actions">
-                                <button onClick={() => {/* TODO: Implement edit service */}}>Edit</button>
-                                <button onClick={() => {/* TODO: Implement delete service */}}>Delete</button>
-                            </div>
-                        </div>
+                        <RentalCard 
+                        key={service._id} 
+                        item={service} 
+                        isService={true}
+                        // Edit/Delete handlers will be implemented later
+                        onDeleteSuccess={() => {/* TODO: Implement delete service */}}
+                        onEditSuccess={() => {/* TODO: Implement edit service */}}
+                    />
                     ))
                 ) : (
                     <div className="services-placeholder">
                         <p>You haven't offered any services yet</p>
-                        <button className="add-service-button" onClick={handleAddService}>
-                            Add New Service
-                        </button>
                     </div>
                 )}
             </>

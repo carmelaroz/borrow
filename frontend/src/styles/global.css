@@ -1,9 +1,4 @@
 @import './variables.css';
-/*@import "tailwindcss";*/
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 
 /* Reset and universal layout styles */
 * {
@@ -38,18 +33,24 @@ body {
     display: flex;
     flex-direction: column;
     position: relative;
+    overflow-y: auto;
   }
 
-main {
+/* main {
     flex: 1;
     padding: var(--spacing);
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
     padding-bottom: 80px;
+    overflow-y: auto;
+} */
+
+main {
+  flex-grow: 1;
+  overflow-y: auto; /* Enable scrolling inside the main section */
+  padding-bottom: 80px; /* Space for footer if needed */
 }
-
-
 
 
 /* Global form styles */
