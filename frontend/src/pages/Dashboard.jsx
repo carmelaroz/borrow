@@ -43,7 +43,7 @@ function Dashboard() {
     const { user, dispatch } = useAuthContext(); // Get user directly from context
     const navigate = useNavigate();
 
-    const handleRentalOffer = () => navigate('/upload');
+    const handleRentalOffer = () => navigate('/offer-rental');
     const handleServiceOffer = () => navigate('/offer-service');
 
     const handleLogout = () => {
@@ -68,8 +68,6 @@ function Dashboard() {
             <p>Street: {user.user.street}</p>
             <button className="toggle-view-btn" onClick={handleRentalOffer}>Offer item to rent</button>
             <button className="toggle-view-btn" onClick={handleServiceOffer}>Offer service</button>
-            <button className="toggle-view-btn">My items</button>
-            <button className="toggle-view-btn">My services</button>
             <button className="toggle-view-btn">Edit profile</button>
             <button className="toggle-view-btn logout" onClick={handleLogout}>Logout</button>
         </div>
