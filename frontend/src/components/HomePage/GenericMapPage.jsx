@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import MapView from "./MapView";
 import ListView from "./ListView";
+import FilterButton from './FilterButton';
+import ToggleViewButton from "./ToggleViewButton";
 import { geocodeAddress } from "./geocode";
-import SearchFilter from "./SearchFilter";
+import SearchBar from "./SearchBar";
 import '../../styles/HomePage/GenericMapPage.css'
+import { handleSearch as searchItems } from "./searchHelpers";
 
 const GenericMapPage = ({ apiUrl, title }) => {
 const [allItems, setAllItems] = useState([]);
@@ -59,35 +62,27 @@ const filteredItems = allItems.filter((item) =>
     item.description.toLowerCase().includes(searchQuery.toLowerCase())
 );
 
+const handleSearch = () => {
+    searchItems({ apiUrl, searchQuery, setAllItems, setLocations });
+};
+
 return (
     <div className="p-4 flex flex-col gap-4 items-center">
     <h2 className="text-2xl font-bold text-center">{title || "Explore"}</h2>
 
     <div className="search-filter-container">
-    <SearchFilter searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <SearchBar
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        onSearch={handleSearch}
+        />
     </div>
-    
+
     <div className="button-group">
-    {/* Buttons: Filter + View Toggle */}
-    <div className="flex gap-2 mb-4">
-        {/* Filter Button */}
-        <button
-        className="toggle-view-btn"
-        onClick={() => console.log("Filter clicked")}
-        >
-        <span>Filter</span>
-        <i className="bi bi-funnel"></i>
-        </button>
-        
-        {/* Map/List Toggle Button */}
-        <button
-        onClick={() => setView(view === "map" ? "list" : "map")}
-        className="toggle-view-btn"
-        >
-        <span>{view === "map" ? "List View" : "Map View"}</span>
-        <i className="bi bi-layout-three-columns"></i>
-        </button>
-    </div>
+        <div className="flex gap-2 mb-4">
+        <FilterButton />
+        <ToggleViewButton view={view} setView={setView} />
+        </div>
     </div>
 
     <div className="map-wrapper w-full">

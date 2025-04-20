@@ -89,10 +89,31 @@ const deleteService = async (req, res) => {
     }
 };
 
+const searchServices = async (req, res) => {
+    try {
+    const query = req.query.query;
+
+    if (!query) {
+        return res.status(400).json({ message: "Query parameter is required" });
+    }
+
+    // Use a case-insensitive and diacritic-insensitive regex for partial match (works for Hebrew/English)
+    const regex = new RegExp(query, "i");
+
+    const services = await Service.find({ title: { $regex: regex } });
+
+    res.json(services);
+    } catch (err) {
+    console.error("Search services error:", err);
+    res.status(500).json({ message: "Server error during service search" });
+    }
+};
+
 module.exports = { 
     uploadNewService,
     getServices,
     getUserServices,
     editService,
     deleteService,
+    searchServices,
 };

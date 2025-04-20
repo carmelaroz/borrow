@@ -1,16 +1,14 @@
 import React from "react";
+import { VscFilter } from "react-icons/vsc";
 
 const FilterButton = () => {
-const handleFilterClick = () => {
-    alert("Filter UI coming soon!");
-};
-
 return (
     <button
-    onClick={handleFilterClick}
-    className="bg-gray-100 hover:bg-gray-200 border px-4 py-2 rounded"
+    className="toggle-view-btn flex items-center gap-2 px-4 py-2 border rounded bg-gray-100 hover:bg-gray-200"
+    onClick={() => console.log("Filter clicked")}
     >
-    Filter
+    <VscFilter style={{ fontSize: "20px", color: "gray" }} />
+    <span>Filter</span>
     </button>
 );
 };

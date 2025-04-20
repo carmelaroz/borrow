@@ -1,28 +1,37 @@
-    import React from "react";
+import React from "react";
+import { CiSearch } from "react-icons/ci";
 
-    const SearchBar = ({ searchQuery, setSearchQuery, onSearch }) => {
-    const handleKeyPress = (e) => {
-        if (e.key === "Enter") onSearch();
-    };
+const SearchBar = ({ searchQuery, setSearchQuery, onSearch }) => {
+const handleKeyPress = (e) => {
+    if (e.key === "Enter") onSearch();
+};
 
-    return (
-        <div className="relative w-full max-w-md">
-        <input
-            type="text"
-            placeholder="Search rentals or services..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="w-full pl-4 pr-10 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+return (
+    <div className="max-w-md w-full relative">
+    {/* Icon positioned inside the input */}
+    <CiSearch
+        style={{
+            position: "absolute", 
+            left: "50px", 
+            top: "10%", 
+            transform: "translateY(170%)",
+            color: "gray",
+            fontSize: "20px",
+            pointerEvents: "none",
+        }}
         />
-        {/* <button
-            onClick={onSearch}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xl"
-        >
-            🔍
-        </button> */}
-        </div>
-    );
-    };
 
-    export default SearchBar;
+    {/* The actual input */}
+    <input
+        type="text"
+        placeholder="       Search rentals or services..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        onKeyPress={handleKeyPress}
+        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+    </div>
+);
+};
+
+export default SearchBar;

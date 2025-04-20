@@ -95,10 +95,37 @@ const deleteRental = async (req, res) => {
     }
 };
 
+const searchRentals = async (req, res) => {
+    try {
+    const { query } = req.query;
+
+    if (!query || query.trim() === "") {
+        return res.status(400).json({ message: "Query is required." });
+    }
+
+    // Split words for ordered search
+    const words = query.trim().split(/\s+/);
+
+    // Create a case-insensitive, ordered regex pattern
+    const regexPattern = words.join(".*"); // e.g. "bike red" => /bike.*red/
+    const regex = new RegExp(regexPattern, "i");
+
+    const results = await Rental.find({
+        title: { $regex: regex },
+    });
+
+    res.status(200).json(results);
+    } catch (err) {
+    console.error("Search error:", err);
+    res.status(500).json({ message: "Server error during search." });
+    }
+};
+
 module.exports = { 
     uploadNewRental,
     getRentals,
     getUserRentals,
     editRental,
     deleteRental,
+    searchRentals,
 };
