@@ -7,15 +7,15 @@ const handleKeyPress = (e) => {
 };
 
 return (
-    <div className="max-w-md w-full relative">
+    <div className="w-full max-w-md relative">
     {/* Icon positioned inside the input */}
     <CiSearch
         style={{
             position: "absolute", 
-            left: "50px", 
-            top: "10%", 
-            transform: "translateY(170%)",
-            color: "gray",
+            left: "10px", 
+            top: "-60%", 
+            transform: "translateY(200%)",
+            color: "black",
             fontSize: "20px",
             pointerEvents: "none",
         }}
@@ -28,7 +28,7 @@ return (
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         onKeyPress={handleKeyPress}
-        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        // className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
     />
     </div>
 );

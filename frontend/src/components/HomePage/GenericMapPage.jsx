@@ -5,7 +5,7 @@ import FilterButton from './FilterButton';
 import ToggleViewButton from "./ToggleViewButton";
 import { geocodeAddress } from "./geocode";
 import SearchBar from "./SearchBar";
-import '../../styles/HomePage/GenericMapPage.css'
+import '../../styles/HomePage/GenericMapPage.css';
 import { handleSearch as searchItems } from "./searchHelpers";
 
 const GenericMapPage = ({ apiUrl, title }) => {
@@ -18,14 +18,26 @@ useEffect(() => {
     const fetchAndMap = async () => {
     const res = await fetch(apiUrl);
     const items = await res.json();
-    setAllItems(items);
+    const itemsWithPriceLabel = addPriceLabel(items);
 
-    const withCoords = await mapItemsToCoords(items);
+    setAllItems(itemsWithPriceLabel);
+    const withCoords = await mapItemsToCoords(itemsWithPriceLabel);
     setLocations(withCoords);
     };
 
     fetchAndMap();
 }, [apiUrl]);
+
+const addPriceLabel = (items) => {
+    return items.map(item => ({
+    ...item,
+    priceLabel: item.pricePerHour
+        ? `${item.pricePerHour}₪ / hour`
+        : item.pricePerDay
+        ? `${item.pricePerDay}₪ / day`
+        : null,
+    }));
+};
 
 const mapItemsToCoords = async (items) => {
     const mapped = await Promise.all(
@@ -33,29 +45,17 @@ const mapItemsToCoords = async (items) => {
         const { street, city } = item;
         if (!street || !city || street.length < 3 || city.length < 2) return null;
 
-        let priceLabel = item.pricePerHour
-        ? `${item.pricePerHour}₪ / hour`
-        : item.pricePerDay
-        ? `${item.pricePerDay}₪ / day`
-        : null;
-
         const coords = await geocodeAddress(street, city);
         return coords
         ? {
-            id: item._id,
-            title: item.title,
-            description: item.description,
-            category: item.category,
-            priceLabel,
-            photo: item.photo,
-            firstName: item.firstName,
-            lastName: item.lastName,
-            phone: item.phone,
+            ...item,
             ...coords,
+            id: item._id,
             }
         : null;
     })
     );
+
     return mapped.filter(Boolean);
 };
 
@@ -67,7 +67,6 @@ const handleFilter = ({ categories, maxPrice }) => {
     let url = `${apiUrl}/filter?`;
 
     if (categories.length > 0) {
-    // Build a single category parameter, not multiple
     const encodedCategories = categories.map(encodeURIComponent).join(",");
     url += `category=${encodedCategories}&`;
     }
@@ -76,13 +75,12 @@ const handleFilter = ({ categories, maxPrice }) => {
     ? `maxPricePerDay=${maxPrice}`
     : `maxPricePerHour=${maxPrice}`;
 
-    console.log("Filter URL:", url); // debug log
-
     fetch(url)
     .then((res) => res.json())
     .then(async (data) => {
-        setAllItems(data);
-        const withCoords = await mapItemsToCoords(data);
+        const dataWithPriceLabel = addPriceLabel(data);
+        setAllItems(dataWithPriceLabel);
+        const withCoords = await mapItemsToCoords(dataWithPriceLabel);
         setLocations(withCoords);
     });
 };
@@ -91,25 +89,22 @@ return (
     <div className="p-4 flex flex-col gap-4 items-center">
     <h2 className="text-2xl font-bold text-center">{title || "Explore"}</h2>
 
-    <div className="search-filter-container">
+    <div className="search-filter-row">
+        <div className="search-filter-container">
         <SearchBar
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        onSearch={handleSearch}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            onSearch={handleSearch}
         />
-    </div>
-
-    <div className="button-group">
-        <div className="flex gap-2 mb-4">
-        <FilterButton
-            onApplyFilters={handleFilter}
-            categoryType={apiUrl.includes("rentals") ? "rental" : "service"}
-        />
-        <ToggleViewButton view={view} setView={setView} />
         </div>
+        <FilterButton
+        onApplyFilters={handleFilter}
+        categoryType={apiUrl.includes("rentals") ? "rental" : "service"}
+        />
     </div>
 
     <div className="map-wrapper w-full">
+        <ToggleViewButton view={view} setView={setView} />
         {view === "map" ? (
         <MapView locations={locations} />
         ) : (

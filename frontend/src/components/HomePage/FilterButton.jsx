@@ -3,6 +3,7 @@ import { VscFilter } from "react-icons/vsc";
 import { rentalCategories, serviceCategories } from "../../constants/categories";
 import '../../styles/HomePage/FilterButton.css'
 import { CiCircleRemove } from "react-icons/ci";
+import { BiFilterAlt } from "react-icons/bi";
 
 const FilterButton = ({ onApplyFilters, categoryType }) => {
 const [showModal, setShowModal] = useState(false);
@@ -25,11 +26,11 @@ const handleApply = () => {
 
 return (
     <>
-        <button
-            className="toggle-view-btn flex items-center gap-2 px-4 py-2 border rounded bg-gray-100 hover:bg-gray-200"
+        <button className="search-filter-style"
+            // className="toggle-view-btn flex items-center gap-2 px-4 py-2 border rounded bg-gray-100 hover:bg-gray-200"
             onClick={() => setShowModal(true)}
         >
-            <VscFilter style={{ fontSize: "20px", color: "gray" }} />
+            <BiFilterAlt style={{ fontSize: "20px", color: "black" }} />
             <span>Filter</span>
         </button>
 

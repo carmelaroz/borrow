@@ -14,6 +14,8 @@ import RentalsMapPage from './components/HomePage/RentalsMapPage.jsx';
 import ServicesMapPage from './components/HomePage/ServicesMapPage.jsx';
 import { useAuthContext } from './context/AuthContext';
 import GoogleMapsLoader from './components/GoogleMapsLoader.jsx';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './i18n';
 
 function App() {
   const { user } = useAuthContext();
@@ -21,6 +23,7 @@ function App() {
     <GoogleMapsLoader>
       <Router>
         <ErrorBoundary>
+        <I18nextProvider i18n={i18n}>
         <div className="app-container">
           <Routes>
             <Route element={<Layout />}>
@@ -36,6 +39,7 @@ function App() {
              </Route>
             </Routes>
           </div>
+          </I18nextProvider>
          </ErrorBoundary>
         </Router>
         </GoogleMapsLoader>

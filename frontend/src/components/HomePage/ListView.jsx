@@ -73,7 +73,7 @@ return (
             🏷️ <strong>Category:</strong> {rental.category}
             </p>
             <p className="rental-info">
-            💸 <strong>Price/Hour:</strong> {rental.pricePerHour}₪
+            💸 <strong>Price/Hour:</strong> {rental.priceLabel}₪
             </p>
             <p className="rental-info">
             📞 <strong>Contact:</strong> {rental.firstName} {rental.lastName} ({rental.phone})
