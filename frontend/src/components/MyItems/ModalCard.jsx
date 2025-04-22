@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import '../../styles/components/MyItems.css';
-import '../../styles/components/RentalCard.css';
+import '../../styles/components/ModalCard.css';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import EditModal from './EditModal';
 import { useAuthContext } from '../../context/AuthContext';
@@ -75,19 +75,19 @@ const ModalCard = ({ item, onDeleteSuccess, onEditSuccess, type = 'rental' }) =>
             </div>
 
             {showDetails && (
-                <div className="modal" onClick={() => setShowDetails(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <h2>{item.title}</h2>
-                        <img src={item.images} alt={item.title} />
-                        <p><strong>Description:</strong> {item.description}</p>
-                        <p><strong>Category:</strong> {item.category}</p>
-                        <p><strong>Phone:</strong> {item.phone}</p>
-                        <p><strong>Price:</strong> {type === 'rental' ? item.pricePerDay : item.pricePerHour}₪ / {type === 'rental' ? 'day' : 'hour'}</p>
-                        <p><strong>City:</strong> {item.city}</p>
-                        <p><strong>Street:</strong> {item.street}</p>
-                        <button onClick={() => setShowDetails(false)}>Close</button>
-                    </div>
+            <div className="rental-card-modal" onClick={() => setShowDetails(false)}>
+                <div className="rental-card-modal-content" onClick={(e) => e.stopPropagation()}>
+                    <h2>{item.title}</h2>
+                    <img src={item.images} alt={item.title} />
+                    <p><strong>Description:</strong> {item.description}</p>
+                    <p><strong>Category:</strong> {item.category}</p>
+                    <p><strong>Phone:</strong> {item.phone}</p>
+                    <p><strong>Price:</strong> {type === 'rental' ? item.pricePerDay : item.pricePerHour}₪ / {type === 'rental' ? 'day' : 'hour'}</p>
+                    <p><strong>City:</strong> {item.city}</p>
+                    <p><strong>Street:</strong> {item.street}</p>
+                    <button className="rental-close-btn" onClick={() => setShowDetails(false)}>Close</button>
                 </div>
+            </div>
             )}
 
             {showDeleteConfirm && (

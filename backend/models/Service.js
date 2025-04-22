@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-console.log('Loading Service.js');
 
 const serviceSchema = new mongoose.Schema({
     firstName: { type: String, required: true },

@@ -121,6 +121,28 @@ const searchRentals = async (req, res) => {
     }
 };
 
+const filterRentals = async (req, res) => {
+    try {
+    const { category, maxPrice } = req.query;
+
+    const query = {};
+    
+    if (category) {
+        const categoriesArray = Array.isArray(category)
+        ? category
+        : category.split(',');
+        query.category = { $in: categoriesArray };
+    }
+
+    if (maxPrice) query.pricePerDay = { $lte: parseFloat(maxPrice) };
+
+    const rentals = await Rental.find(query);
+    res.status(200).json(rentals);
+    } catch (err) {
+    res.status(500).json({ error: "Failed to filter rentals", details: err.message });
+    }
+};
+
 module.exports = { 
     uploadNewRental,
     getRentals,
@@ -128,4 +150,5 @@ module.exports = {
     editRental,
     deleteRental,
     searchRentals,
+    filterRentals,
 };

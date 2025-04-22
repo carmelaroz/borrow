@@ -1,4 +1,4 @@
-.modal {
+.rental-card-modal {
     position: fixed;
     inset: 0;
     background-color: rgba(0, 0, 0, 0.6);
@@ -9,25 +9,25 @@
     padding: 1rem;
 }
 
-.modal-content {
+.rental-card-modal-content {
     background: white;
     padding: 1rem 1.2rem;
     border-radius: 12px;
     width: 90%;
-    max-width: 320px;      
+    max-width: 320px;
     max-height: 85vh;
     overflow-y: auto;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    animation: fadeIn 0.25s ease-in-out;
+    animation: rentalFadeIn 0.25s ease-in-out;
     text-align: center;
 }
 
-.modal-content h2 {
+.rental-card-modal-content h2 {
     margin-bottom: 1rem;
     font-size: 1.2rem;
 }
 
-.modal-content img {
+.rental-card-modal-content img {
     width: 100%;
     height: auto;
     max-height: 180px;
@@ -36,12 +36,14 @@
     margin-bottom: 1rem;
 }
 
-.modal-content p {
+.rental-card-modal-content p {
     font-size: 0.95rem;
     margin: 0.4rem 0;
 }
 
-.modal-content button {
+/* Button ONLY in RentalCard modal */
+.rental-card-modal-content .rental-close-btn {
+    all: unset;
     margin-top: 1rem;
     padding: 0.5rem 1.2rem;
     background-color: #3b82f6;
@@ -51,11 +53,11 @@
     cursor: pointer;
 }
 
-.modal-content button:hover {
+.rental-card-modal-content .rental-close-btn:hover {
     background-color: #2563eb;
 }
 
-@keyframes fadeIn {
+@keyframes rentalFadeIn {
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -73,10 +75,10 @@
     background: white;
     transition: transform 0.2s;
     cursor: pointer;
-    text-align: center;           
+    text-align: center;
     display: flex;
     flex-direction: column;
-    align-items: center;             
+    align-items: center;
 }
 
 .rental-card:hover {

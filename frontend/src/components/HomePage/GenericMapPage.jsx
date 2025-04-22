@@ -20,20 +20,28 @@ useEffect(() => {
     const items = await res.json();
     setAllItems(items);
 
-    const withCoords = await Promise.all(
-        items.map(async (item) => {
-        const { street, city } = item;
-        if (!street || !city || street.length < 3 || city.length < 2) {
-            return null;
-        }
+    const withCoords = await mapItemsToCoords(items);
+    setLocations(withCoords);
+    };
 
-        let priceLabel = null;
-        if (item.pricePerHour) priceLabel = `${item.pricePerHour}₪ / hour`;
-        if (item.pricePerDay) priceLabel = `${item.pricePerDay}₪ / day`;
+    fetchAndMap();
+}, [apiUrl]);
+
+const mapItemsToCoords = async (items) => {
+    const mapped = await Promise.all(
+    items.map(async (item) => {
+        const { street, city } = item;
+        if (!street || !city || street.length < 3 || city.length < 2) return null;
+
+        let priceLabel = item.pricePerHour
+        ? `${item.pricePerHour}₪ / hour`
+        : item.pricePerDay
+        ? `${item.pricePerDay}₪ / day`
+        : null;
 
         const coords = await geocodeAddress(street, city);
-        if (coords) {
-            return {
+        return coords
+        ? {
             id: item._id,
             title: item.title,
             description: item.description,
@@ -44,26 +52,39 @@ useEffect(() => {
             lastName: item.lastName,
             phone: item.phone,
             ...coords,
-            };
-        } else {
-            return null;
-        }
-        })
+            }
+        : null;
+    })
     );
-
-    setLocations(withCoords.filter(Boolean));
-    };
-
-    fetchAndMap();
-}, [apiUrl]);
-
-const filteredItems = allItems.filter((item) =>
-    item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.description.toLowerCase().includes(searchQuery.toLowerCase())
-);
+    return mapped.filter(Boolean);
+};
 
 const handleSearch = () => {
     searchItems({ apiUrl, searchQuery, setAllItems, setLocations });
+};
+
+const handleFilter = ({ categories, maxPrice }) => {
+    let url = `${apiUrl}/filter?`;
+
+    if (categories.length > 0) {
+    // Build a single category parameter, not multiple
+    const encodedCategories = categories.map(encodeURIComponent).join(",");
+    url += `category=${encodedCategories}&`;
+    }
+
+    url += apiUrl.includes("rentals")
+    ? `maxPricePerDay=${maxPrice}`
+    : `maxPricePerHour=${maxPrice}`;
+
+    console.log("Filter URL:", url); // debug log
+
+    fetch(url)
+    .then((res) => res.json())
+    .then(async (data) => {
+        setAllItems(data);
+        const withCoords = await mapItemsToCoords(data);
+        setLocations(withCoords);
+    });
 };
 
 return (
@@ -80,7 +101,10 @@ return (
 
     <div className="button-group">
         <div className="flex gap-2 mb-4">
-        <FilterButton />
+        <FilterButton
+            onApplyFilters={handleFilter}
+            categoryType={apiUrl.includes("rentals") ? "rental" : "service"}
+        />
         <ToggleViewButton view={view} setView={setView} />
         </div>
     </div>
@@ -89,7 +113,7 @@ return (
         {view === "map" ? (
         <MapView locations={locations} />
         ) : (
-        <ListView rentals={filteredItems} />
+        <ListView rentals={allItems} />
         )}
     </div>
     </div>

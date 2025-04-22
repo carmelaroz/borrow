@@ -1,7 +1,5 @@
 const Service = require('../models/Service.js');
 
-console.log('Loading serviceController.js');
-
 const uploadNewService = async (req, res) => {
     const { title, description, category, pricePerHour, phone, city, street } = req.body;
 
@@ -109,6 +107,28 @@ const searchServices = async (req, res) => {
     }
 };
 
+const filterServices = async (req, res) => {
+    try {
+    const { category, maxPrice } = req.query;
+
+    const query = {};
+
+    if (category) {
+        const categoriesArray = Array.isArray(category)
+        ? category
+        : category.split(',');
+        query.category = { $in: categoriesArray };
+    }
+
+    if (maxPrice) query.pricePerHour = { $lte: parseFloat(maxPrice) };
+
+    const services = await Service.find(query);
+    res.status(200).json(services);
+    } catch (err) {
+    res.status(500).json({ error: "Failed to filter services", details: err.message });
+    }
+};
+
 module.exports = { 
     uploadNewService,
     getServices,
@@ -116,4 +136,5 @@ module.exports = {
     editService,
     deleteService,
     searchServices,
+    filterServices,
 };
