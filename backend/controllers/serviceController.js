@@ -8,7 +8,7 @@ const uploadNewService = async (req, res) => {
     }
 
     try {
-        const imagePaths = req.files ? req.files.map(file => file.path) : [];
+        const imagePaths = req.files?.map(file => `/uploads/${file.filename}`) || [];
 
         const newService = await Service.create({
             firstName: req.user.firstName,
