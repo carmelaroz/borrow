@@ -1,5 +1,32 @@
 const Service = require('../models/Service.js');
 
+// const uploadNewService = async (req, res) => {
+//     const { title, description, category, pricePerHour, phone, city, street } = req.body;
+
+//     if (!req.user) {
+//         return res.status(401).json({ error: 'Unauthorized. User data missing.' });
+//     }
+
+//     try {
+//         const newService = await Service.create({
+//             firstName: req.user.firstName,
+//             lastName: req.user.lastName,
+//             email: req.user.email,
+//             title,
+//             description,
+//             category,
+//             pricePerHour,
+//             phone,
+//             city,
+//             street
+//         });
+
+//         res.status(201).json(newService);
+//     } catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// };
+
 const uploadNewService = async (req, res) => {
     const { title, description, category, pricePerHour, phone, city, street } = req.body;
 
@@ -8,6 +35,8 @@ const uploadNewService = async (req, res) => {
     }
 
     try {
+        const imagePaths = req.files ? req.files.map(file => file.path) : [];
+
         const newService = await Service.create({
             firstName: req.user.firstName,
             lastName: req.user.lastName,
@@ -18,7 +47,8 @@ const uploadNewService = async (req, res) => {
             pricePerHour,
             phone,
             city,
-            street
+            street,
+            images: imagePaths
         });
 
         res.status(201).json(newService);

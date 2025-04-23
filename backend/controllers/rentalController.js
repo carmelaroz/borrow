@@ -1,33 +1,74 @@
 const Rental = require('../models/Rental.js');
 
+// const uploadNewRental = async (req, res) => {
+// const { title, description, category, pricePerDay, images, phone, status, city, street } = req.body;
+
+// // Check if the user is attached to the request (e.g. from auth middleware)
+// if (!req.user) {
+//     return res.status(401).json({ error: 'Unauthorized. User data missing.' });
+// }
+
+// try {
+//     const newRental = await Rental.create({
+//     firstName: req.user.firstName,
+//     lastName: req.user.lastName,
+//     email: req.user.email,
+//     title,
+//     description,
+//     category,
+//     pricePerDay,
+//     images,
+//     phone,
+//     status,
+//     city,
+//     street
+//     });
+
+//     res.status(201).json(newRental);
+// } catch (error) {
+//     res.status(400).json({ error: error.message });
+// }
+// };
+
 const uploadNewRental = async (req, res) => {
-const { title, description, category, pricePerDay, images, phone, status, city, street } = req.body;
-
-// Check if the user is attached to the request (e.g. from auth middleware)
-if (!req.user) {
-    return res.status(401).json({ error: 'Unauthorized. User data missing.' });
-}
-
-try {
-    const newRental = await Rental.create({
-    firstName: req.user.firstName,
-    lastName: req.user.lastName,
-    email: req.user.email,
+    const {
     title,
     description,
     category,
     pricePerDay,
-    images,
     phone,
     status,
     city,
     street
+    } = req.body;
+
+    if (!req.user) {
+    return res.status(401).json({ error: 'Unauthorized. User data missing.' });
+    }
+
+    try {
+    // Get uploaded file paths
+    const imagePaths = req.files?.map(file => `/uploads/${file.filename}`) || [];
+
+    const newRental = await Rental.create({
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
+        email: req.user.email,
+        title,
+        description,
+        category,
+        pricePerDay,
+        images: imagePaths, // ✅ save paths instead of raw strings
+        phone,
+        status,
+        city,
+        street
     });
 
     res.status(201).json(newRental);
-} catch (error) {
+    } catch (error) {
     res.status(400).json({ error: error.message });
-}
+    }
 };
 
 // Get all rentals

@@ -5,7 +5,7 @@ const rentalSchema = new mongoose.Schema({
     lastName: { type: String, required: true },
     email: { type: String, required: true },
     title: { type: String, required: true },
-    description: { type: String, required: true },
+    description: { type: String },
     category: { type: String, required: true },
     pricePerDay: { type: Number, required: true },
     images: [{ type: String }], // URLs or paths
