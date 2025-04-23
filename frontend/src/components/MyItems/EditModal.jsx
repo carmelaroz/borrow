@@ -15,8 +15,6 @@ const EditModal = ({ item, type, onSave, onCancel }) => {
     };
 
     const categoryOptions = type === 'rental' ? rentalCategories : serviceCategories;
-    const priceFieldName = type === 'rental' ? 'pricePerDay' : 'pricePerHour';
-    const priceLabel = type === 'rental' ? 'Price Per Day (₪)' : 'Price Per Hour (₪)';
 
     return (
         <div className="modal">
@@ -47,11 +45,11 @@ const EditModal = ({ item, type, onSave, onCancel }) => {
                 <label htmlFor="phone">Phone</label>
                 <input name="phone" value={form.phone} onChange={handleChange} />
 
-                <label htmlFor={priceFieldName}>{priceLabel}</label>
+                <label htmlFor="price">Price (₪)</label>
                 <input
-                    name={priceFieldName}
+                    name="price"
                     type="number"
-                    value={form[priceFieldName]}
+                    value={form.price}
                     onChange={handleChange}
                 />
 

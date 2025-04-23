@@ -85,9 +85,14 @@
     transform: scale(1.02);
 }
 
-.rental-card img {
+/* .rental-card img {
     width: 100%;
     height: 100px;
     object-fit: cover;
     border-radius: 8px;
+} */
+
+.rental-card img {
+    max-width: 100%;
+    height: auto;
 }

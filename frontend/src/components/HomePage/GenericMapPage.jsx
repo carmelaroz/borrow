@@ -51,13 +51,6 @@ const handleSearch = () => {
     searchItems({ apiUrl, searchQuery, setAllItems, setLocations });
 };
 
-// const addPriceLabel = (items) => {
-//     return items.map(item => ({
-//     ...item,
-//     priceLabel: item.price ? `${item.price}₪` : null,
-//     }));
-// };
-
 const handleFilter = ({ categories, maxPrice }) => {
     let url = `${apiUrl}/filter?`;
 
@@ -71,9 +64,6 @@ const handleFilter = ({ categories, maxPrice }) => {
     fetch(url)
     .then((res) => res.json())
     .then(async (data) => {
-        // const dataWithPriceLabel = addPriceLabel(data);
-        // setAllItems(dataWithPriceLabel);
-        // const withCoords = await mapItemsToCoords(dataWithPriceLabel);
         setAllItems(data);
         const withCoords = await mapItemsToCoords(data);
         setLocations(withCoords);

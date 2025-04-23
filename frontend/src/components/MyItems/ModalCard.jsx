@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../../styles/components/MyItems.css';
 import '../../styles/components/ModalCard.css';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
@@ -16,7 +16,6 @@ const ModalCard = ({ item, onDeleteSuccess, onEditSuccess, type = 'rental' }) =>
 
     const handleToggleStatus = () => {
         setActive(!active);
-        // Optional: Add toggle backend logic here if needed
     };
 
     const handleDelete = async () => {
@@ -61,7 +60,12 @@ const ModalCard = ({ item, onDeleteSuccess, onEditSuccess, type = 'rental' }) =>
     return (
         <>
             <div className="rental-card" onClick={() => setShowDetails(true)}>
-                <img src={item.images} alt={item.title} />
+                <img 
+                    src={Array.isArray(item.images) && item.images.length > 0 
+                        ? `http://localhost:5000${item.images[0]}`
+                        : 'placeholder.jpg'} 
+                    alt={item.title} 
+                />
                 <h3>{item.title}</h3>
                 <p>{item.price}₪ / {type === 'rental' ? 'day' : 'hour'}</p>
                 <p>Status: {active ? 'Available' : 'Not Available'}</p>
@@ -75,19 +79,24 @@ const ModalCard = ({ item, onDeleteSuccess, onEditSuccess, type = 'rental' }) =>
             </div>
 
             {showDetails && (
-            <div className="rental-card-modal" onClick={() => setShowDetails(false)}>
-                <div className="rental-card-modal-content" onClick={(e) => e.stopPropagation()}>
-                    <h2>{item.title}</h2>
-                    <img src={item.images} alt={item.title} />
-                    <p><strong>Description:</strong> {item.description}</p>
-                    <p><strong>Category:</strong> {item.category}</p>
-                    <p><strong>Phone:</strong> {item.phone}</p>
-                    <p><strong>Price:</strong> {item.price}₪ / {type === 'rental' ? 'day' : 'hour'}</p>
-                    <p><strong>City:</strong> {item.city}</p>
-                    <p><strong>Street:</strong> {item.street}</p>
-                    <button className="rental-close-btn" onClick={() => setShowDetails(false)}>Close</button>
+                <div className="rental-card-modal" onClick={() => setShowDetails(false)}>
+                    <div className="rental-card-modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h2>{item.title}</h2>
+                        <img 
+                            src={Array.isArray(item.images) && item.images.length > 0 
+                                ? `http://localhost:5000${item.images[0]}`
+                                : 'placeholder.jpg'} 
+                            alt={item.title} 
+                        />
+                        <p><strong>Description:</strong> {item.description}</p>
+                        <p><strong>Category:</strong> {item.category}</p>
+                        <p><strong>Phone:</strong> {item.phone}</p>
+                        <p><strong>Price:</strong> {item.price}₪ / {type === 'rental' ? 'day' : 'hour'}</p>
+                        <p><strong>City:</strong> {item.city}</p>
+                        <p><strong>Street:</strong> {item.street}</p>
+                        <button className="rental-close-btn" onClick={() => setShowDetails(false)}>Close</button>
+                    </div>
                 </div>
-            </div>
             )}
 
             {showDeleteConfirm && (
