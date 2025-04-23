@@ -1,34 +1,7 @@
 const Service = require('../models/Service.js');
 
-// const uploadNewService = async (req, res) => {
-//     const { title, description, category, pricePerHour, phone, city, street } = req.body;
-
-//     if (!req.user) {
-//         return res.status(401).json({ error: 'Unauthorized. User data missing.' });
-//     }
-
-//     try {
-//         const newService = await Service.create({
-//             firstName: req.user.firstName,
-//             lastName: req.user.lastName,
-//             email: req.user.email,
-//             title,
-//             description,
-//             category,
-//             pricePerHour,
-//             phone,
-//             city,
-//             street
-//         });
-
-//         res.status(201).json(newService);
-//     } catch (error) {
-//         res.status(400).json({ error: error.message });
-//     }
-// };
-
 const uploadNewService = async (req, res) => {
-    const { title, description, category, pricePerHour, phone, city, street } = req.body;
+    const { title, description, category, price, phone, city, street } = req.body;
 
     if (!req.user) {
         return res.status(401).json({ error: 'Unauthorized. User data missing.' });
@@ -44,7 +17,7 @@ const uploadNewService = async (req, res) => {
             title,
             description,
             category,
-            pricePerHour,
+            price,
             phone,
             city,
             street,
@@ -87,12 +60,12 @@ const getUserServices = async (req, res) => {
 
 const editService = async (req, res) => {
     const { id } = req.params;
-    const { title, description, category, pricePerHour, phone } = req.body;
+    const { title, description, category, price, phone } = req.body;
 
     try {
         const updated = await Service.findByIdAndUpdate(
             id,
-            { title, description, category, pricePerHour, phone },
+            { title, description, category, price, phone },
             { new: true }
         );
 
@@ -150,7 +123,7 @@ const filterServices = async (req, res) => {
         query.category = { $in: categoriesArray };
     }
 
-    if (maxPrice) query.pricePerHour = { $lte: parseFloat(maxPrice) };
+    if (maxPrice) query.price = { $lte: parseFloat(maxPrice) };
 
     const services = await Service.find(query);
     res.status(200).json(services);

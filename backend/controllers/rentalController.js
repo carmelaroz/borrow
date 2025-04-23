@@ -1,41 +1,11 @@
 const Rental = require('../models/Rental.js');
 
-// const uploadNewRental = async (req, res) => {
-// const { title, description, category, pricePerDay, images, phone, status, city, street } = req.body;
-
-// // Check if the user is attached to the request (e.g. from auth middleware)
-// if (!req.user) {
-//     return res.status(401).json({ error: 'Unauthorized. User data missing.' });
-// }
-
-// try {
-//     const newRental = await Rental.create({
-//     firstName: req.user.firstName,
-//     lastName: req.user.lastName,
-//     email: req.user.email,
-//     title,
-//     description,
-//     category,
-//     pricePerDay,
-//     images,
-//     phone,
-//     status,
-//     city,
-//     street
-//     });
-
-//     res.status(201).json(newRental);
-// } catch (error) {
-//     res.status(400).json({ error: error.message });
-// }
-// };
-
 const uploadNewRental = async (req, res) => {
     const {
     title,
     description,
     category,
-    pricePerDay,
+    price,
     phone,
     status,
     city,
@@ -57,7 +27,7 @@ const uploadNewRental = async (req, res) => {
         title,
         description,
         category,
-        pricePerDay,
+        price,
         images: imagePaths, // ✅ save paths instead of raw strings
         phone,
         status,
@@ -105,12 +75,12 @@ const getUserRentals = async (req, res) => {
 // Edit a rental
 const editRental = async (req, res) => {
     const { id } = req.params;
-    const { title, description, category, pricePerDay, images, phone } = req.body;
+    const { title, description, category, price, images, phone } = req.body;
 
     try {
     const updated = await Rental.findByIdAndUpdate(
         id,
-        { title, description, category, pricePerDay, images, phone },
+        { title, description, category, price, images, phone },
         { new: true }
     );
 
@@ -175,7 +145,7 @@ const filterRentals = async (req, res) => {
         query.category = { $in: categoriesArray };
     }
 
-    if (maxPrice) query.pricePerDay = { $lte: parseFloat(maxPrice) };
+    if (maxPrice) query.price = { $lte: parseFloat(maxPrice) };
 
     const rentals = await Rental.find(query);
     res.status(200).json(rentals);

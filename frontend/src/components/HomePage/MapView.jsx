@@ -39,7 +39,8 @@ return (
             <p className="text-sm text-gray-600">{selected.description}</p>
             <p className="text-sm">👤 {selected.firstName} {selected.lastName}</p>
             <p className="text-sm">📞 {selected.phone}</p>
-            {selected.priceLabel && <p className="text-sm">💸 {selected.priceLabel}</p>}
+            <p className="text-sm">💸 {selected.price}₪</p>
+            <p className="text-sm"> {selected.status}</p>
             <p className="text-sm">🏷️ {selected.category}</p>
         </div>
         </InfoWindow>

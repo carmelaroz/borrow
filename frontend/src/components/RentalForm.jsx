@@ -13,7 +13,7 @@ const RentalForm = () => {
         title: '',
         description: '',
         category: '',
-        pricePerDay: '',
+        price: '',
         images: '',
         phone: user.user.phone || '',
         city: user.user.city || '', 
@@ -83,7 +83,7 @@ const RentalForm = () => {
                             ))}
                         </select>
                         <input 
-                            name="pricePerDay" 
+                            name="price" 
                             placeholder="Price per day" 
                             onChange={handleChange} 
                             className="input input-bordered w-full" 

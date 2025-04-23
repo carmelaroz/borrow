@@ -18,26 +18,14 @@ useEffect(() => {
     const fetchAndMap = async () => {
     const res = await fetch(apiUrl);
     const items = await res.json();
-    const itemsWithPriceLabel = addPriceLabel(items);
 
-    setAllItems(itemsWithPriceLabel);
-    const withCoords = await mapItemsToCoords(itemsWithPriceLabel);
+    setAllItems(items);
+    const withCoords = await mapItemsToCoords(items);
     setLocations(withCoords);
     };
 
     fetchAndMap();
 }, [apiUrl]);
-
-const addPriceLabel = (items) => {
-    return items.map(item => ({
-    ...item,
-    priceLabel: item.pricePerHour
-        ? `${item.pricePerHour}₪ / hour`
-        : item.pricePerDay
-        ? `${item.pricePerDay}₪ / day`
-        : null,
-    }));
-};
 
 const mapItemsToCoords = async (items) => {
     const mapped = await Promise.all(
@@ -63,6 +51,13 @@ const handleSearch = () => {
     searchItems({ apiUrl, searchQuery, setAllItems, setLocations });
 };
 
+// const addPriceLabel = (items) => {
+//     return items.map(item => ({
+//     ...item,
+//     priceLabel: item.price ? `${item.price}₪` : null,
+//     }));
+// };
+
 const handleFilter = ({ categories, maxPrice }) => {
     let url = `${apiUrl}/filter?`;
 
@@ -71,16 +66,16 @@ const handleFilter = ({ categories, maxPrice }) => {
     url += `category=${encodedCategories}&`;
     }
 
-    url += apiUrl.includes("rentals")
-    ? `maxPricePerDay=${maxPrice}`
-    : `maxPricePerHour=${maxPrice}`;
+    url += `maxPrice=${maxPrice}`;
 
     fetch(url)
     .then((res) => res.json())
     .then(async (data) => {
-        const dataWithPriceLabel = addPriceLabel(data);
-        setAllItems(dataWithPriceLabel);
-        const withCoords = await mapItemsToCoords(dataWithPriceLabel);
+        // const dataWithPriceLabel = addPriceLabel(data);
+        // setAllItems(dataWithPriceLabel);
+        // const withCoords = await mapItemsToCoords(dataWithPriceLabel);
+        setAllItems(data);
+        const withCoords = await mapItemsToCoords(data);
         setLocations(withCoords);
     });
 };

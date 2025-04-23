@@ -63,7 +63,7 @@ const ModalCard = ({ item, onDeleteSuccess, onEditSuccess, type = 'rental' }) =>
             <div className="rental-card" onClick={() => setShowDetails(true)}>
                 <img src={item.images} alt={item.title} />
                 <h3>{item.title}</h3>
-                <p>{type === 'rental' ? item.pricePerDay : item.pricePerHour}₪ / {type === 'rental' ? 'day' : 'hour'}</p>
+                <p>{item.price}₪ / {type === 'rental' ? 'day' : 'hour'}</p>
                 <p>Status: {active ? 'Available' : 'Not Available'}</p>
                 <div className="card-actions">
                     <button className="toggle-view-btn" onClick={(e) => { e.stopPropagation(); setShowEditModal(true); }}>Edit</button>
@@ -82,7 +82,7 @@ const ModalCard = ({ item, onDeleteSuccess, onEditSuccess, type = 'rental' }) =>
                     <p><strong>Description:</strong> {item.description}</p>
                     <p><strong>Category:</strong> {item.category}</p>
                     <p><strong>Phone:</strong> {item.phone}</p>
-                    <p><strong>Price:</strong> {type === 'rental' ? item.pricePerDay : item.pricePerHour}₪ / {type === 'rental' ? 'day' : 'hour'}</p>
+                    <p><strong>Price:</strong> {item.price}₪ / {type === 'rental' ? 'day' : 'hour'}</p>
                     <p><strong>City:</strong> {item.city}</p>
                     <p><strong>Street:</strong> {item.street}</p>
                     <button className="rental-close-btn" onClick={() => setShowDetails(false)}>Close</button>

@@ -1,41 +1,3 @@
-// import React from "react";
-// import '../../styles/HomePage/ListView.css'
-
-
-// const ListView = ({ rentals }) => {
-//     return (
-//     <div className="list-container-wrapper">
-//         <div className="list-container">
-//             {rentals.map((rental) => (
-//             <div key={rental._id} className="rental-card">
-//                 {rental.photo && (
-//                 <img
-//                     src={rental.photo}
-//                     alt={rental.title}
-//                     className="rental-image"
-//                 />
-//                 )}
-//                 <h3 className="rental-title"> {rental.title}</h3>
-//                 <p className="rental-description">📝 {rental.description}</p>
-//                 <p className="rental-info">
-//                 🏷️ <strong>Category:</strong> {rental.category}
-//                 </p>
-//                 <p className="rental-info">
-//                 💸 <strong>Price/Hour:</strong> {rental.pricePerHour}₪
-//                 </p>
-//                 <p className="rental-info">
-//                 📞 <strong>Contact:</strong> {rental.firstName} {rental.lastName} ({rental.phone})
-//                 </p>
-//             </div>
-//             ))}
-//         </div>
-//     </div>
-//     );
-// };
-
-// export default ListView;
-
-
 import React, { useState } from "react";
 import ImagePopup from "./ListImagePopup.jsx"; // Import the new ImagePopup component
 import '../../styles/HomePage/ListView.css';
@@ -70,13 +32,16 @@ return (
             <h3 className="rental-title"> {rental.title}</h3>
             <p className="rental-description">📝 {rental.description}</p>
             <p className="rental-info">
-            🏷️ <strong>Category:</strong> {rental.category}
+            🏷️  {rental.category}
             </p>
             <p className="rental-info">
-            💸 <strong>Price/Hour:</strong> {rental.priceLabel}₪
+            💸  {rental.price}₪
             </p>
             <p className="rental-info">
-            📞 <strong>Contact:</strong> {rental.firstName} {rental.lastName} ({rental.phone})
+                {rental.status}
+            </p>
+            <p className="rental-info">
+            📞  {rental.firstName} {rental.lastName} ({rental.phone})
             </p>
         </div>
         ))}

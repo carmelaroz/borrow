@@ -8,7 +8,7 @@ const serviceSchema = new mongoose.Schema({
     title: { type: String, required: true },
     description: { type: String },
     category: { type: String, required: true },
-    pricePerHour: { type: Number, required: true },
+    price: { type: Number, required: true },
     images: [{ type: String }],
     phone: { type: String, required: true },
     status: { type: String, default: 'available' },

@@ -12,7 +12,7 @@ const ServiceForm = () => {
         title: '',
         description: '',
         category: '',
-        pricePerHour: '',
+        price: '',
         phone: user?.user?.phone || '',
         city: user?.user?.city || '',
         street: user?.user?.street || ''
@@ -84,10 +84,10 @@ const ServiceForm = () => {
                             ))}
                         </select>
                         <input 
-                            name="pricePerHour" 
+                            name="price" 
                             type="number"
-                            placeholder="Price per hour" 
-                            value={form.pricePerHour}
+                            placeholder="Price" 
+                            value={form.price}
                             onChange={handleChange} 
                             className="input input-bordered w-full" 
                         />
