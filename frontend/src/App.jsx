@@ -34,6 +34,7 @@ function App() {
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/offer-rental" element={<RentalForm />} />
                 <Route path="/my-items" element={<MyModals />} />
+                <Route path="/messages" element={<MessagesPage />} />
                 {/* <Route path="/messages" element={<MessagesPage />} /> */}
                 <Route path="/offer-service" element={<ServiceForm />} />
              </Route>

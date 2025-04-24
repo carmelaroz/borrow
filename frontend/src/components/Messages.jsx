@@ -1,176 +1,223 @@
-import { useState, useEffect } from 'react';
-import { db } from '../firebase';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
-import Chat from '../components/Chat';
-import axios from 'axios';
-import { useAuthContext } from '../context/AuthContext';
+import React, { useState, useEffect, useRef } from 'react';
+import io from 'socket.io-client';
 
-const Messages = () => {
-  const [conversations, setConversations] = useState([]);
-  const [selectedContact, setSelectedContact] = useState(null);
-  const [userId, setUserId] = useState(null);
-  const [userMap, setUserMap] = useState({});
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const { user, auth, loading: authLoading } = useAuthContext();
+// Connect to Socket.IO server
+const socket = io('http://localhost:5000', {
+  withCredentials: true,
+});
 
-  // Check authentication and set user ID
+const Messages = ({ userId }) => {
+  const [conversations, setConversations] = useState([]); // List of conversations
+  const [activeConversation, setActiveConversation] = useState(null); // Selected receiverId
+  const [messages, setMessages] = useState([]); // Messages for active conversation
+  const [newMessage, setNewMessage] = useState(''); // Input for new message
+  const messagesEndRef = useRef(null);
+
+  // Scroll to bottom of messages
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   useEffect(() => {
-    console.log('=== Authentication Debug Info ===');
-    console.log('Auth Loading:', authLoading);
-    console.log('Auth Object:', auth ? 'Present' : 'Missing');
-    console.log('Auth Instance:', auth);
-    console.log('Context User:', user ? user : 'Missing');
-
-    if (!db) {
-      setError('Firebase is not properly initialized.');
-      setLoading(false);
-      return;
-    }
-
-    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
-      console.log('Firebase Auth State:', firebaseUser ? `User ${firebaseUser.uid}` : 'No user');
-      console.log('Current Firebase User:', auth.currentUser);
-
-      if (firebaseUser) {
-        const uid = firebaseUser.uid;
-        console.log('=== Connected Firebase User Details ===');
-        console.log('UID:', uid);
-        console.log('Email:', firebaseUser.email);
-        console.log('Display Name:', firebaseUser.displayName);
-        console.log('Full Firebase User Object:', firebaseUser);
-        setUserId(uid);
-        setLoading(false);
-      } else {
-        console.log('No authenticated Firebase user found.');
-        console.log('Context User Details:', user);
-        setError('Please log in to view messages. If you believe you are logged in, try logging out and back in.');
-        setLoading(false);
-      }
-    }, (error) => {
-      console.error('Auth state error:', error);
-      setError('Authentication error: ' + error.message);
-      setLoading(false);
+    socket.emit('join', userId);
+  
+    // Fetch conversations
+    socket.emit('getConversations', userId);
+    socket.on('loadConversations', (convs) => {
+      console.log('Loaded Conversations:', convs);
+      setConversations(convs);
     });
-
-    return () => unsubscribe();
-  }, [auth, authLoading]);
-
-  // Fetch conversations and user data
-  useEffect(() => {
-    if (!userId) return;
-
-    let unsubscribe;
-    const fetchConversations = async () => {
-      try {
-        const conversationsRef = collection(db, 'conversations');
-        const q = query(conversationsRef, where('participants', 'array-contains', userId));
-
-        unsubscribe = onSnapshot(q, async (snapshot) => {
-          const conversationsData = snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          console.log('Fetched Conversations:', conversationsData);
-
-          const contactIds = conversationsData
-            .map((conv) => conv.participants.find((id) => id !== userId))
-            .filter(Boolean);
-
-          if (contactIds.length > 0) {
-            try {
-              const response = await axios.get(
-                `/api/users?ids=${contactIds.join(',')}`,
-                {
-                  headers: {
-                    Authorization: `Bearer ${user?.token}`,
-                  },
-                }
-              );
-
-              const userData = response.data.reduce((acc, user) => {
-                const mongoUser = user.user || user;
-                const userId = mongoUser._id?.$oid || mongoUser._id;
-                if (userId) {
-                  acc[userId] = {
-                    firstName: mongoUser.firstName || mongoUser.displayName || 'Unknown',
-                    lastName: mongoUser.lastName || '',
-                  };
-                }
-                return acc;
-              }, {});
-
-              setUserMap(userData);
-              setConversations(conversationsData);
-            } catch (apiError) {
-              console.error('Error fetching user data:', apiError);
-              setError('Failed to fetch user data: ' + apiError.message);
-            }
-          } else {
-            setConversations([]);
-          }
-          setLoading(false);
-        }, (error) => {
-          console.error('Firebase snapshot error:', error);
-          setError('Failed to fetch conversations: ' + error.message);
-          setLoading(false);
-        });
-      } catch (err) {
-        console.error('Error in fetchConversations:', err);
-        setError('Error fetching conversations: ' + err.message);
-        setLoading(false);
+  
+    socket.on('loadMessages', (loadedMessages) => {
+      console.log('Loaded Messages:', loadedMessages); // Add this log
+      setMessages(loadedMessages);
+    });
+  
+    socket.on('receiveMessage', (message) => {
+      console.log('Received Message:', message); // Add this log
+      if (
+        (message.senderId === activeConversation && message.receiverId === userId) ||
+        (message.senderId === userId && message.receiverId === activeConversation)
+      ) {
+        setMessages((prevMessages) => [...prevMessages, message]);
       }
+      socket.emit('getConversations', userId);
+    });
+  
+    return () => {
+      socket.off('loadConversations');
+      socket.off('loadMessages');
+      socket.off('receiveMessage');
     };
+  }, [userId, activeConversation]);
 
-    fetchConversations();
-    return () => unsubscribe && unsubscribe();
-  }, [userId, user]);
+  // Scroll to bottom when messages update
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
-  if (loading) return <div className="p-4">Loading...</div>;
-  if (error) return <div className="p-4 text-red-500">{error}</div>;
+  // Select a conversation
+  const selectConversation = (receiverId) => {
+    setActiveConversation(receiverId);
+    setMessages([]);
+    socket.emit('getMessages', { userId, receiverId });
+  };
+
+  // Send a message
+  const sendMessage = () => {
+    if (newMessage.trim() && activeConversation) {
+      const messageData = {
+        senderId: userId,
+        receiverId: activeConversation,
+        content: newMessage,
+      };
+      socket.emit('sendMessage', messageData);
+      setNewMessage('');
+    }
+  };
+
+  // Handle Enter key press
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  };
 
   return (
-    <div className="flex h-screen">
-      <div className="w-64 border-r border-gray-200 p-4 overflow-y-auto">
-        <h2 className="text-xl font-semibold mb-4">Conversations</h2>
-        {conversations.length === 0 ? (
-          <p className="text-gray-500">No conversations yet</p>
-        ) : (
-          conversations.map((conversation) => {
-            const contactId = conversation.participants.find((id) => id !== userId);
-            return (
-              <div
-                key={conversation.id}
-                onClick={() => setSelectedContact(contactId)}
-                className={`p-3 cursor-pointer rounded-lg mb-2 ${
-                  selectedContact === contactId ? 'bg-blue-100' : 'hover:bg-gray-100'
-                }`}
-              >
-                {userMap[contactId] ? (
-                  <div>
-                    <span className="font-medium">
-                      {userMap[contactId].firstName} {userMap[contactId].lastName}
-                    </span>
-                    {conversation.lastMessage && (
-                      <p className="text-sm text-gray-500 truncate">
-                        {conversation.lastMessage.text}
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <span className="text-gray-500">Loading...</span>
-                )}
-              </div>
-            );
-          })
-        )}
+    <div style={{ display: 'flex', maxWidth: '1000px', margin: '0 auto', height: '80vh' }}>
+      {/* Sidebar: Conversation List */}
+      <div
+        style={{
+          width: '300px',
+          borderRight: '1px solid #ccc',
+          overflowY: 'auto',
+          backgroundColor: '#f1f1f1',
+        }}
+      >
+        <h3 style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>Conversations</h3>{conversations.length === 0 ? (
+  <p style={{ padding: '10px' }}>No conversations yet.</p>
+) : (
+  conversations.map((conv) => (
+    <div
+      key={conv.receiverId}
+      onClick={() => selectConversation(conv.receiverId)}
+      style={{
+        padding: '10px',
+        cursor: 'pointer',
+        backgroundColor:
+          activeConversation === conv.receiverId ? '#E0E0FF' : 'transparent',
+        borderBottom: '1px solid #eee',
+        direction: 'rtl',
+      }}
+    >
+      <strong style={{ color: '#6353B5' }}>
+        {conv.receiverName || conv.receiverId}
+      </strong>
+      {conv.lastMessage && (
+        <p style={{ margin: '5px 0', fontSize: '14px', color: '#555' }}>
+          {conv.lastMessage.content.length > 20
+            ? `${conv.lastMessage.content.substring(0, 20)}...`
+            : conv.lastMessage.content}
+        </p>
+      )}
+      {conv.lastMessage && (
+        <small style={{ color: '#999' }}>
+          {new Date(conv.lastMessage.timestamp).toLocaleTimeString('he-IL')}
+        </small>
+      )}
+    </div>
+  ))
+)}
+
+
       </div>
-      <div className="flex-1 p-4">
-        {selectedContact ? (
-          <Chat userId={userId} contactId={selectedContact} userMap={userMap} />
+
+      {/* Chat Window */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {activeConversation ? (
+          <>
+            <div
+              style={{
+                padding: '10px',
+                borderBottom: '1px solid #ccc',
+                backgroundColor: '#f9f9f9',
+              }}
+            >
+              <h3>Chat with {activeConversation}</h3>
+            </div>
+            <div
+              style={{
+                flex: 1,
+                overflowY: 'scroll',
+                padding: '10px',
+                backgroundColor: '#fff',
+              }}
+            >
+              {messages.map((msg, index) => (
+                <div
+                  key={index}
+                  style={{
+                    textAlign: msg.senderId === userId ? 'right' : 'left',
+                    marginBottom: '10px',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'inline-block',
+                      padding: '8px 12px',
+                      borderRadius: '10px',
+                      backgroundColor: msg.senderId === userId ? '#007bff' : '#e0e0e0',
+                      color: msg.senderId === userId ? 'white' : 'black',
+                      maxWidth: '70%',
+                    }}
+                  >
+                    <p style={{ margin: 0 }}>
+                      <strong>{msg.senderId === userId ? 'You' : msg.senderId}:</strong>{' '}
+                      {msg.content}
+                    </p>
+                    <small style={{ display: 'block', opacity: 0.7 }}>
+                      {new Date(msg.timestamp).toLocaleString()}
+                    </small>
+                  </div>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+            <div style={{ display: 'flex', gap: '10px', padding: '10px', borderTop: '1px solid #ccc' }}>
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Type a message"
+                style={{ flex: 1, padding: '8px' }}
+              />
+              <button
+                onClick={sendMessage}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                }}
+              >
+                Send
+              </button>
+            </div>
+          </>
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            Select a conversation to start chatting
+          <div
+            style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#999',
+            }}
+          >
+            <p>Select a conversation to start chatting</p>
           </div>
         )}
       </div>

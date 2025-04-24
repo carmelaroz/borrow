@@ -1,5 +1,8 @@
 @import './variables.css';
 @import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Reset and universal layout styles */
 * {
