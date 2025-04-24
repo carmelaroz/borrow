@@ -5,45 +5,51 @@ import io from 'socket.io-client';
 const socket = io('http://localhost:5000', {
   withCredentials: true,
 });
-
 const Messages = ({ userId }) => {
-  const [conversations, setConversations] = useState([]); // List of conversations
-  const [activeConversation, setActiveConversation] = useState(null); // Selected receiverId
-  const [messages, setMessages] = useState([]); // Messages for active conversation
-  const [newMessage, setNewMessage] = useState(''); // Input for new message
+  const [conversations, setConversations] = useState([]);
+  const [activeConversation, setActiveConversation] = useState(null); // { id, name }
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef(null);
+  const isSendingRef = useRef(false);
 
-  // Scroll to bottom of messages
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
     socket.emit('join', userId);
-  
-    // Fetch conversations
     socket.emit('getConversations', userId);
+
     socket.on('loadConversations', (convs) => {
       console.log('Loaded Conversations:', convs);
       setConversations(convs);
     });
-  
+
     socket.on('loadMessages', (loadedMessages) => {
-      console.log('Loaded Messages:', loadedMessages); // Add this log
+      console.log('Loaded Messages:', loadedMessages);
       setMessages(loadedMessages);
     });
-  
+
     socket.on('receiveMessage', (message) => {
-      console.log('Received Message:', message); // Add this log
+      console.log('Received Message:', message);
       if (
-        (message.senderId === activeConversation && message.receiverId === userId) ||
-        (message.senderId === userId && message.receiverId === activeConversation)
+        (message.senderId === activeConversation?.id && message.receiverId === userId) ||
+        (message.senderId === userId && message.receiverId === activeConversation?.id)
       ) {
-        setMessages((prevMessages) => [...prevMessages, message]);
+        setMessages((prevMessages) => {
+          const messageExists = prevMessages.some(
+            (msg) => msg.content === message.content && msg.timestamp === message.timestamp
+          );
+          if (!messageExists) {
+            return [...prevMessages, message];
+          }
+          return prevMessages;
+        });
       }
       socket.emit('getConversations', userId);
     });
-  
+
     return () => {
       socket.off('loadConversations');
       socket.off('loadMessages');
@@ -51,34 +57,45 @@ const Messages = ({ userId }) => {
     };
   }, [userId, activeConversation]);
 
-  // Scroll to bottom when messages update
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  // Select a conversation
   const selectConversation = (receiverId) => {
-    setActiveConversation(receiverId);
+    const selectedConv = conversations.find((conv) => conv.receiverId === receiverId);
+    setActiveConversation({
+      id: receiverId,
+      name: selectedConv?.receiverName || receiverId, // Fallback to ID if name isn't available
+    });
     setMessages([]);
     socket.emit('getMessages', { userId, receiverId });
   };
 
-  // Send a message
+  const getSenderName = (senderId) => {
+    if (senderId === userId) return 'You';
+    const conv = conversations.find((c) => c.receiverId === senderId);
+    return conv?.receiverName || senderId; // Fallback to ID if name isn't available
+  };
+
   const sendMessage = () => {
-    if (newMessage.trim() && activeConversation) {
+    if (newMessage.trim() && activeConversation && !isSendingRef.current) {
+      isSendingRef.current = true;
       const messageData = {
         senderId: userId,
-        receiverId: activeConversation,
+        receiverId: activeConversation.id,
         content: newMessage,
       };
       socket.emit('sendMessage', messageData);
       setNewMessage('');
+      setTimeout(() => {
+        isSendingRef.current = false;
+      }, 500);
     }
   };
 
-  // Handle Enter key press
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
+      e.preventDefault();
       sendMessage();
     }
   };
@@ -87,80 +104,58 @@ const Messages = ({ userId }) => {
     <div style={{ display: 'flex', maxWidth: '1000px', margin: '0 auto', height: '80vh' }}>
       {/* Sidebar: Conversation List */}
       <div
-        style={{
-          width: '300px',
-          borderRight: '1px solid #ccc',
-          overflowY: 'auto',
-          backgroundColor: '#f1f1f1',
-        }}
-      >
-        <h3 style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>Conversations</h3>{conversations.length === 0 ? (
-  <p style={{ padding: '10px' }}>No conversations yet.</p>
-) : (
-  conversations.map((conv) => (
-    <div
-      key={conv.receiverId}
-      onClick={() => selectConversation(conv.receiverId)}
-      style={{
-        padding: '10px',
-        cursor: 'pointer',
-        backgroundColor:
-          activeConversation === conv.receiverId ? '#E0E0FF' : 'transparent',
-        borderBottom: '1px solid #eee',
-        direction: 'rtl',
-      }}
-    >
-      <strong style={{ color: '#6353B5' }}>
-        {conv.receiverName || conv.receiverId}
-      </strong>
-      {conv.lastMessage && (
-        <p style={{ margin: '5px 0', fontSize: '14px', color: '#555' }}>
-          {conv.lastMessage.content.length > 20
-            ? `${conv.lastMessage.content.substring(0, 20)}...`
-            : conv.lastMessage.content}
-        </p>
-      )}
-      {conv.lastMessage && (
-        <small style={{ color: '#999' }}>
-          {new Date(conv.lastMessage.timestamp).toLocaleTimeString('he-IL')}
-        </small>
-      )}
-    </div>
-  ))
-)}
-
-
+  style={{
+    width: '100px', // Keep sidebar width fixed
+    borderRight: '1px solid #ccc',
+    overflowY: 'auto',
+    backgroundColor: '#f1f1f1',
+  }}
+>
+        <h3 style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>Conversations</h3>
+        {conversations.length === 0 ? (
+          <p style={{ padding: '10px' }}>No conversations yet.</p>
+        ) : (
+          conversations.map((conv) => (
+            <div
+              key={conv.receiverId}
+              onClick={() => selectConversation(conv.receiverId)}
+              style={{
+                padding: '10px',
+                cursor: 'pointer',
+                backgroundColor: activeConversation?.id === conv.receiverId ? '#E0E0FF' : 'transparent',
+                borderBottom: '1px solid #eee',
+                direction: 'rtl',
+              }}
+            >
+              <strong style={{ color: '#6353B5' }}>{conv.receiverName || conv.receiverId}</strong>
+              {conv.lastMessage && (
+                <p style={{ margin: '5px 0', fontSize: '14px', color: '#555' }}>
+                  {conv.lastMessage.content.length > 20 ? `${conv.lastMessage.content.substring(0, 20)}...` : conv.lastMessage.content}
+                </p>
+              )}
+              {conv.lastMessage && (
+                <small style={{ color: '#999' }}>{new Date(conv.lastMessage.timestamp).toLocaleTimeString('he-IL')}</small>
+              )}
+            </div>
+          ))
+        )}
       </div>
 
       {/* Chat Window */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div
+  style={{
+    flex: activeConversation ? 3 : 1, // Increase flex-grow when a conversation is active
+    display: 'flex',
+    flexDirection: 'column',
+  }}>
         {activeConversation ? (
           <>
-            <div
-              style={{
-                padding: '10px',
-                borderBottom: '1px solid #ccc',
-                backgroundColor: '#f9f9f9',
-              }}
-            >
-              <h3>Chat with {activeConversation}</h3>
+            <div style={{ padding: '10px', borderBottom: '1px solid #ccc', backgroundColor: '#f9f9f9' }}>
+              <h3>Chat with {activeConversation.name}</h3>
             </div>
-            <div
-              style={{
-                flex: 1,
-                overflowY: 'scroll',
-                padding: '10px',
-                backgroundColor: '#fff',
-              }}
-            >
+            <div style={{ flex: 1, overflowY: 'scroll', padding: '10px', backgroundColor: '#fff' }}>
               {messages.map((msg, index) => (
-                <div
-                  key={index}
-                  style={{
-                    textAlign: msg.senderId === userId ? 'right' : 'left',
-                    marginBottom: '10px',
-                  }}
-                >
+                <div key={index} style={{ textAlign: msg.senderId === userId ? 'right' : 'left', marginBottom: '10px' }}>
                   <div
                     style={{
                       display: 'inline-block',
@@ -172,12 +167,9 @@ const Messages = ({ userId }) => {
                     }}
                   >
                     <p style={{ margin: 0 }}>
-                      <strong>{msg.senderId === userId ? 'You' : msg.senderId}:</strong>{' '}
-                      {msg.content}
+                      <strong>{getSenderName(msg.senderId)}:</strong> {msg.content}
                     </p>
-                    <small style={{ display: 'block', opacity: 0.7 }}>
-                      {new Date(msg.timestamp).toLocaleString()}
-                    </small>
+                    <small style={{ display: 'block', opacity: 0.7 }}>{new Date(msg.timestamp).toLocaleString()}</small>
                   </div>
                 </div>
               ))}
@@ -208,15 +200,7 @@ const Messages = ({ userId }) => {
             </div>
           </>
         ) : (
-          <div
-            style={{
-              flex: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#999',
-            }}
-          >
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>
             <p>Select a conversation to start chatting</p>
           </div>
         )}

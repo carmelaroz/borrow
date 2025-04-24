@@ -1,16 +1,16 @@
 import React from 'react';
 import Messages from '../components/Messages';
+import { useAuthContext } from '../context/AuthContext'; // adjust the path as needed
 
 const MessagesPage = () => {
-  // Replace with actual userId from auth context or state
-  const userId = '67fc23c4f2d248d63d099a62'; // Example - replace with real userId
+  const { user } = useAuthContext(); // Access user from context
+  console.log(user); // 👈 Put it here!
 
-  return (
-    <div style={{ padding: '20px' }}>
-      <h1>Chat</h1>
-      <Messages userId={userId} />
-    </div>
-  );
+  if (!user) {
+    return <p>Loading...</p>; // Or redirect to login if user is not authenticated
+  }
+
+  return <Messages userId={user.user.id} />;
 };
 
 export default MessagesPage;
